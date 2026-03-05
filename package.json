@@ -9,7 +9,7 @@
     "start": "next start",
     "lint": "eslint",
     "electron:dev": "npm run dev & npx electron . --dev",
-    "electron:build": "next build && npx electron-builder --win",
+    "electron:build": "node -e \"const fs=require('fs');['dist','.next'].forEach(d=>{if(fs.existsSync(d)){fs.rmSync(d,{recursive:true,force:true})}})\" && npx next build && npx electron-builder --win",
     "electron:start": "npx electron ."
   },
   "dependencies": {
@@ -69,7 +69,9 @@
         "from": ".next/standalone",
         "to": "standalone",
         "filter": [
-          "**/*"
+          "**/*",
+          "!dist",
+          "!dist/**/*"
         ]
       },
       {
