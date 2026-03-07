@@ -23,7 +23,7 @@ export async function POST(request) {
         }
 
         // OpenAI 兼容格式（适用于所有其他供应商）
-        return await fetchOpenAIModels(apiKey, baseUrl, embedOnly);
+        return await fetchOpenAIModels(apiKey, baseUrl, embedOnly, provider);
 
     } catch (error) {
         console.error('拉取模型列表错误:', error);
@@ -89,10 +89,12 @@ async function fetchGeminiModels(apiKey, baseUrl, embedOnly) {
             );
         }
     } else if (embedOnly) {
-        // 无能力信息时，按名称匹配嵌入模型
+        // 无能力信息时，按名称匹配嵌入模型（同 OpenAI 路径的正则）
+        const EMBED_REGEX = /(?:^text-|embed|bge[-_]|bce[-_]|e5[-_]|gte[-_]|jina-clip|jina-embed|voyage-|uae[-_]|retrieval|LLM2Vec)/i;
+        const RERANK_REGEX = /(?:rerank|re-rank|re-ranker)/i;
         models = models.filter(m => {
-            const id = (m.name || m.id || '').toLowerCase();
-            return /embed|text-embed/i.test(id);
+            const id = (m.name || m.id || '');
+            return EMBED_REGEX.test(id) && !RERANK_REGEX.test(id);
         });
     }
 
@@ -121,7 +123,7 @@ function extractModelArray(data) {
 
 // OpenAI 兼容格式拉取模型（/v1/models）
 // 参考 Cherry Studio：多路径尝试 + 多格式兼容 + 超时处理
-async function fetchOpenAIModels(apiKey, baseUrl, embedOnly) {
+async function fetchOpenAIModels(apiKey, baseUrl, embedOnly, provider) {
     const base = (baseUrl || '').replace(/\/$/, '');
     if (!base) {
         return NextResponse.json(
@@ -178,15 +180,45 @@ async function fetchOpenAIModels(apiKey, baseUrl, embedOnly) {
         }
     }
 
-    if (rawModels.length === 0 && lastError) {
-        return handleFetchError(lastError);
+    if (rawModels.length === 0) {
+        if (lastError) return handleFetchError(lastError);
+        return NextResponse.json({ error: '未能获取到模型列表，请检查 API 地址和 Key 是否正确' }, { status: 404 });
     }
 
     let models = rawModels;
 
     if (embedOnly) {
-        // 匹配常见嵌入模型：embed*, bge-*, bce-*, e5-*, gte-* 等
-        models = models.filter(m => /embed|\/bge[-_]|\/bce[-_]|\/e5[-_]|\/gte[-_]|text-embedding/i.test(m.id || m.name || ''));
+        // 参考 Cherry Studio：更全的嵌入模型正则 + rerank 排除
+        const EMBED_REGEX = /(?:^text-|embed|bge[-_]|bce[-_]|e5[-_]|gte[-_]|jina-clip|jina-embed|voyage-|uae[-_]|retrieval|LLM2Vec)/i;
+        const RERANK_REGEX = /(?:rerank|re-rank|re-ranker)/i;
+        const filtered = models.filter(m => {
+            const id = m.id || m.name || '';
+            return EMBED_REGEX.test(id) && !RERANK_REGEX.test(id);
+        });
+        if (filtered.length > 0) {
+            models = filtered;
+        } else {
+            // 部分供应商的 /models 不返回嵌入模型 → 使用已知列表（参考 Cherry Studio 内置模型）
+            const KNOWN_EMBED_MODELS = {
+                zhipu: [{ id: 'embedding-3', displayName: 'Embedding-3' }],
+                deepseek: [{ id: 'deepseek-embedding', displayName: 'DeepSeek Embedding' }],
+                moonshot: [{ id: 'moonshot-v1-embedding', displayName: 'Moonshot Embedding' }],
+                qwen: [{ id: 'text-embedding-v3', displayName: 'Text Embedding v3' }, { id: 'text-embedding-v2', displayName: 'Text Embedding v2' }],
+                baidu: [{ id: 'bce-reranker-base_v1', displayName: 'BCE Reranker Base' }, { id: 'tao-8k', displayName: 'Tao 8K' }],
+                doubao: [{ id: 'doubao-embedding', displayName: 'Doubao Embedding' }],
+                baichuan: [{ id: 'Baichuan-Text-Embedding', displayName: 'Baichuan Embedding' }],
+                hunyuan: [{ id: 'hunyuan-embedding', displayName: 'Hunyuan Embedding' }],
+                yi: [{ id: 'yi-embedding', displayName: 'Yi Embedding' }],
+                openai: [{ id: 'text-embedding-3-small', displayName: 'Text Embedding 3 Small' }, { id: 'text-embedding-3-large', displayName: 'Text Embedding 3 Large' }, { id: 'text-embedding-ada-002', displayName: 'Ada 002' }],
+                siliconflow: [{ id: 'BAAI/bge-m3', displayName: 'BGE-M3' }, { id: 'BAAI/bge-large-zh-v1.5', displayName: 'BGE Large ZH v1.5' }],
+            };
+            const knownModels = KNOWN_EMBED_MODELS[provider];
+            if (knownModels) {
+                return NextResponse.json({ models: knownModels });
+            }
+            // 其他供应商：回退显示全部模型让用户自行选择
+            console.log('[embedOnly] 过滤后无嵌入模型，回退全部:', rawModels.map(m => m.id || m.name).slice(0, 20));
+        }
     }
 
     models = models.map(m => ({

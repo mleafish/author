@@ -40,6 +40,7 @@ export default function Home() {
     activeWorkId, setActiveWorkId: setActiveWorkIdStore,
     sidebarOpen, setSidebarOpen, toggleSidebar,
     aiSidebarOpen, setAiSidebarOpen, toggleAiSidebar,
+    sidebarPushMode, aiSidebarPushMode, _hydrateSidebarModes,
     showSettings, setShowSettings,
     showSnapshots, setShowSnapshots,
     theme, setTheme,
@@ -56,6 +57,9 @@ export default function Home() {
   const { t } = useI18n();
   const [showHelp, setShowHelp] = useState(false);
   const editorRef = useRef(null);
+
+  // 客户端水合后加载 localStorage 中的侧边栏布局偏好
+  useEffect(() => { _hydrateSidebarModes(); }, []);
 
   // 监听工具栏高度，设置 CSS 变量供侧边栏定位使用
   useEffect(() => {
@@ -338,7 +342,7 @@ export default function Home() {
   }, [showToast]);
 
   return (
-    <div className={`app-layout${aiSidebarOpen ? ' ai-open' : ''}`}>
+    <div className={`app-layout${aiSidebarOpen ? ' ai-open' : ''}${!aiSidebarPushMode ? ' ai-overlay' : ''}`}>
       {/* ===== 更新提示 ===== */}
       <UpdateBanner />
 
@@ -353,6 +357,11 @@ export default function Home() {
 
       {/* ===== 内容区域（编辑器 + AI 侧栏）===== */}
       <div className="content-row">
+        {/* 挤开模式：侧边栏放在 main 外面 */}
+        {sidebarPushMode && (
+          <Sidebar pushMode onOpenHelp={() => setShowHelp(true)} onToggle={() => setSidebarOpen(!sidebarOpen)} editorRef={editorRef} />
+        )}
+
         {/* ===== 主内容 ===== */}
         <main className="main-content">
           {activeChapter ? (
@@ -381,8 +390,10 @@ export default function Home() {
             </div>
           )}
 
-          {/* ===== 侧边栏（覆盖在编辑器画布上，不覆盖工具栏）===== */}
-          <Sidebar onOpenHelp={() => setShowHelp(true)} onToggle={() => setSidebarOpen(!sidebarOpen)} editorRef={editorRef} />
+          {/* 覆盖模式：侧边栏放在 main 里面 */}
+          {!sidebarPushMode && (
+            <Sidebar onOpenHelp={() => setShowHelp(true)} onToggle={() => setSidebarOpen(!sidebarOpen)} editorRef={editorRef} />
+          )}
 
           {/* 侧边栏展开按钮（编辑器画布左上角） */}
           {!sidebarOpen && (

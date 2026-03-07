@@ -1,6 +1,7 @@
 'use client';
 
 import { useEditor, EditorContent } from '@tiptap/react';
+import { TextSelection } from '@tiptap/pm/state';
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
 import CharacterCount from '@tiptap/extension-character-count';
@@ -25,6 +26,7 @@ const AI_MODES = [
     { key: 'rewrite', label: '✎ 润色', desc: '提升选中文字质量', needsSelection: true },
     { key: 'expand', label: '⊕ 扩写', desc: '丰富细节与描写', needsSelection: true },
     { key: 'condense', label: '⊖ 精简', desc: '浓缩核心内容', needsSelection: true },
+    { key: 'chat', label: '💬 问答', desc: '向 AI 提问，不改变原文', needsSelection: false },
 ];
 
 // ==================== 虚拟分页常量 ====================
@@ -39,6 +41,9 @@ const Editor = forwardRef(function Editor({ content, onUpdate, editable = true, 
 
     // 页数状态
     const [pageCount, setPageCount] = useState(1);
+
+    // 搜索栏
+    const [findBarVisible, setFindBarVisible] = useState(false);
 
     // 页边距状态（从 localStorage 读取）
     const [margins, setMargins] = useState(() => {
@@ -198,6 +203,18 @@ const Editor = forwardRef(function Editor({ content, onUpdate, editable = true, 
         observerRef.current = observer;
     }, []);
 
+    // Ctrl+F 快捷键
+    useEffect(() => {
+        const handler = (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
+                e.preventDefault();
+                setFindBarVisible(v => !v);
+            }
+        };
+        document.addEventListener('keydown', handler);
+        return () => document.removeEventListener('keydown', handler);
+    }, []);
+
     if (!editor) return null;
 
     // 容器总高度 = 页数 × 单页高 + 间隙总高
@@ -286,6 +303,7 @@ const Editor = forwardRef(function Editor({ content, onUpdate, editable = true, 
                     </div>
                 </div>
             </div>
+            <FindBar editor={editor} visible={findBarVisible} onClose={() => setFindBarVisible(false)} />
             <InlineAI editor={editor} onAiRequest={onAiRequest} onArchiveGeneration={onArchiveGeneration} contextItems={contextItems} contextSelection={contextSelection} setContextSelection={setContextSelection} />
             <StatusBar editor={editor} pageCount={pageCount} />
         </>
@@ -293,6 +311,210 @@ const Editor = forwardRef(function Editor({ content, onUpdate, editable = true, 
 });
 
 export default Editor;
+
+// ==================== 搜索栏 ====================
+function FindBar({ editor, visible, onClose }) {
+    const [query, setQuery] = useState('');
+    const [replaceText, setReplaceText] = useState('');
+    const [showReplace, setShowReplace] = useState(false);
+    const [matches, setMatches] = useState([]);
+    const [currentIndex, setCurrentIndex] = useState(-1);
+    const [caseSensitive, setCaseSensitive] = useState(false);
+    const inputRef = useRef(null);
+
+    // 搜索文档中的所有匹配
+    const findMatches = useCallback((searchText) => {
+        if (!editor || !searchText) {
+            setMatches([]);
+            setCurrentIndex(-1);
+            return [];
+        }
+        const doc = editor.state.doc;
+        const results = [];
+        const searchLower = caseSensitive ? searchText : searchText.toLowerCase();
+
+        doc.descendants((node, pos) => {
+            if (node.isText) {
+                const text = caseSensitive ? node.text : node.text.toLowerCase();
+                let idx = 0;
+                while ((idx = text.indexOf(searchLower, idx)) !== -1) {
+                    results.push({ from: pos + idx, to: pos + idx + searchText.length });
+                    idx += 1;
+                }
+            }
+        });
+        setMatches(results);
+        return results;
+    }, [editor, caseSensitive]);
+
+    // 当 query 或 caseSensitive 变化时重新搜索
+    useEffect(() => {
+        const results = findMatches(query);
+        if (results.length > 0) {
+            setCurrentIndex(0);
+            goToMatch(results, 0);
+        } else {
+            setCurrentIndex(-1);
+        }
+    }, [query, caseSensitive]); // eslint-disable-line react-hooks/exhaustive-deps
+
+    // 跳转到指定匹配
+    const goToMatch = useCallback((matchList, idx) => {
+        if (!editor || !matchList.length || idx < 0 || idx >= matchList.length) return;
+        const { from, to } = matchList[idx];
+        const tr = editor.state.tr.setSelection(TextSelection.create(editor.state.doc, from, to));
+        tr.scrollIntoView();
+        editor.view.dispatch(tr);
+    }, [editor]);
+
+    // 下一个
+    const goNext = useCallback(() => {
+        if (matches.length === 0) return;
+        const next = (currentIndex + 1) % matches.length;
+        setCurrentIndex(next);
+        goToMatch(matches, next);
+    }, [matches, currentIndex, goToMatch]);
+
+    // 上一个
+    const goPrev = useCallback(() => {
+        if (matches.length === 0) return;
+        const prev = (currentIndex - 1 + matches.length) % matches.length;
+        setCurrentIndex(prev);
+        goToMatch(matches, prev);
+    }, [matches, currentIndex, goToMatch]);
+
+    // 替换当前
+    const replaceCurrent = useCallback(() => {
+        if (!editor || currentIndex < 0 || currentIndex >= matches.length) return;
+        const { from, to } = matches[currentIndex];
+        editor.chain().focus().insertContentAt({ from, to }, replaceText).run();
+        // 重新搜索
+        setTimeout(() => {
+            const results = findMatches(query);
+            if (results.length > 0) {
+                const newIdx = Math.min(currentIndex, results.length - 1);
+                setCurrentIndex(newIdx);
+                goToMatch(results, newIdx);
+            }
+        }, 50);
+    }, [editor, currentIndex, matches, replaceText, query, findMatches, goToMatch]);
+
+    // 全部替换
+    const replaceAll = useCallback(() => {
+        if (!editor || matches.length === 0) return;
+        // 从后往前替换，防止位置偏移
+        const sorted = [...matches].sort((a, b) => b.from - a.from);
+        let chain = editor.chain();
+        for (const { from, to } of sorted) {
+            chain = chain.insertContentAt({ from, to }, replaceText);
+        }
+        chain.run();
+        setTimeout(() => {
+            setMatches([]);
+            setCurrentIndex(-1);
+            findMatches(query);
+        }, 50);
+    }, [editor, matches, replaceText, query, findMatches]);
+
+    // 打开时聚焦
+    useEffect(() => {
+        if (visible) {
+            setTimeout(() => inputRef.current?.focus(), 50);
+            // 如果编辑器有选中文本，自动填入搜索框
+            if (editor) {
+                const { from, to } = editor.state.selection;
+                if (from !== to) {
+                    const text = editor.state.doc.textBetween(from, to, ' ');
+                    if (text && text.length < 200) setQuery(text);
+                }
+            }
+        } else {
+            setQuery('');
+            setReplaceText('');
+            setMatches([]);
+            setCurrentIndex(-1);
+        }
+    }, [visible]); // eslint-disable-line react-hooks/exhaustive-deps
+
+    // Escape 关闭
+    useEffect(() => {
+        if (!visible) return;
+        const handler = (e) => {
+            if (e.key === 'Escape') {
+                e.preventDefault();
+                e.stopPropagation();
+                onClose();
+            }
+        };
+        document.addEventListener('keydown', handler, true);
+        return () => document.removeEventListener('keydown', handler, true);
+    }, [visible, onClose]);
+
+    if (!visible) return null;
+
+    return (
+        <div className="find-bar">
+            <div className="find-bar-row">
+                {/* 展开替换 */}
+                <button
+                    className="find-bar-toggle"
+                    onClick={() => setShowReplace(r => !r)}
+                    title={showReplace ? '收起替换' : '展开替换'}
+                >
+                    {showReplace ? '▾' : '▸'}
+                </button>
+
+                <input
+                    ref={inputRef}
+                    className="find-bar-input"
+                    placeholder="搜索..."
+                    value={query}
+                    onChange={e => setQuery(e.target.value)}
+                    onKeyDown={e => {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            e.shiftKey ? goPrev() : goNext();
+                        }
+                    }}
+                />
+
+                <span className="find-bar-count">
+                    {query ? `${matches.length > 0 ? currentIndex + 1 : 0}/${matches.length}` : ''}
+                </span>
+
+                <button className="find-bar-btn" onClick={goPrev} disabled={matches.length === 0} title="上一个 (Shift+Enter)">↑</button>
+                <button className="find-bar-btn" onClick={goNext} disabled={matches.length === 0} title="下一个 (Enter)">↓</button>
+                <button
+                    className={`find-bar-btn ${caseSensitive ? 'active' : ''}`}
+                    onClick={() => setCaseSensitive(c => !c)}
+                    title="区分大小写"
+                    style={{ fontSize: 11, fontWeight: caseSensitive ? 700 : 400 }}
+                >Aa</button>
+                <button className="find-bar-btn find-bar-close" onClick={onClose} title="关闭 (Esc)">✕</button>
+            </div>
+
+            {showReplace && (
+                <div className="find-bar-row">
+                    <div style={{ width: 22 }} /> {/* spacer aligning with toggle */}
+                    <input
+                        className="find-bar-input"
+                        placeholder="替换为..."
+                        value={replaceText}
+                        onChange={e => setReplaceText(e.target.value)}
+                        onKeyDown={e => {
+                            if (e.key === 'Enter') {
+                                e.preventDefault();
+                                replaceCurrent();
+                            }
+                        }}
+                    />
+                    <button className="find-bar-btn" onClick={replaceCurrent} disabled={currentIndex < 0} title="替换当前">替换</button>
+                    <button className="find-bar-btn" onClick={replaceAll} disabled={matches.length === 0} title="全部替换">全部</button>
+                </div>
+            )}
+        </div>
+    );
+}
 
 // ==================== Inline AI 组件 ====================
 function InlineAI({ editor, onAiRequest, onArchiveGeneration, contextItems, contextSelection, setContextSelection }) {
@@ -317,6 +539,12 @@ function InlineAI({ editor, onAiRequest, onArchiveGeneration, contextItems, cont
     const currentModeRef = useRef('continue');
     // 文档快照：生成前保存，拒绝时恢复
     const savedDocRef = useRef(null);
+    // ===== Chat Q&A 状态 =====
+    const [chatMessages, setChatMessages] = useState([]); // [{role:'user'|'assistant', content}]
+    const [chatStreaming, setChatStreaming] = useState(false);
+    const [chatAnswer, setChatAnswer] = useState('');
+    const chatPanelRef = useRef(null);
+    const chatInputRef = useRef(null);
 
     // 获取选中文本
     const getSelectedText = useCallback(() => {
@@ -513,8 +741,56 @@ function InlineAI({ editor, onAiRequest, onArchiveGeneration, contextItems, cont
     }, [editor, instruction, onArchiveGeneration]);
 
     // 执行 AI 生成
+    // ===== Chat Q&A 生成（不修改原文） =====
+    const generateChat = useCallback(async (userText) => {
+        if (!onAiRequest || chatStreaming) return;
+        const question = (userText || '').trim();
+        if (!question) return;
+
+        // 添加用户消息
+        setChatMessages(prev => [...prev, { role: 'user', content: question }]);
+        setChatStreaming(true);
+        setChatAnswer('');
+        const controller = new AbortController();
+        abortRef.current = controller;
+        let fullAnswer = '';
+
+        try {
+            const contextText = getContextText();
+            await onAiRequest({
+                mode: 'chat',
+                text: contextText,
+                instruction: question,
+                signal: controller.signal,
+                onChunk: (chunk) => {
+                    fullAnswer += chunk;
+                    setChatAnswer(fullAnswer);
+                },
+            });
+        } catch (err) {
+            if (err.name !== 'AbortError') {
+                fullAnswer += '\n\n❌ 请求出错: ' + (err.message || '未知错误');
+                setChatAnswer(fullAnswer);
+            }
+        } finally {
+            setChatStreaming(false);
+            abortRef.current = null;
+            if (fullAnswer) {
+                setChatMessages(prev => [...prev, { role: 'assistant', content: fullAnswer }]);
+                setChatAnswer('');
+            }
+        }
+    }, [onAiRequest, chatStreaming, getContextText]);
+
     const generate = useCallback(async () => {
         if (!onAiRequest || streaming) return;
+
+        // Chat 模式走独立路径
+        if (mode === 'chat') {
+            generateChat(instruction);
+            setInstruction('');
+            return;
+        }
 
         const selectedText = getSelectedText();
         const contextText = getContextText();
@@ -598,7 +874,7 @@ function InlineAI({ editor, onAiRequest, onArchiveGeneration, contextItems, cont
                 setVisible(false);
             }
         }
-    }, [onAiRequest, streaming, mode, instruction, getSelectedText, getContextText, editor, enqueueText, updatePosition]);
+    }, [onAiRequest, streaming, mode, instruction, getSelectedText, getContextText, editor, enqueueText, updatePosition, generateChat]);
 
     // 键盘快捷键：Ctrl+J 打开，Esc 关闭/拒绝，Tab 接受
     useEffect(() => {
@@ -636,6 +912,13 @@ function InlineAI({ editor, onAiRequest, onArchiveGeneration, contextItems, cont
         document.addEventListener('mousedown', handler);
         return () => document.removeEventListener('mousedown', handler);
     }, [visible, streaming, pendingGhost, close]);
+
+    // Chat 模式下自动滚到底部
+    useEffect(() => {
+        if (chatPanelRef.current) {
+            chatPanelRef.current.scrollTop = chatPanelRef.current.scrollHeight;
+        }
+    }, [chatMessages, chatAnswer]);
 
     // 待确认状态时不显示浮窗，改为在幽灵文本末尾显示操作栏
     if (!visible && !pendingGhost) {
@@ -682,7 +965,7 @@ function InlineAI({ editor, onAiRequest, onArchiveGeneration, contextItems, cont
     return (
         <div
             ref={popoverRef}
-            className="inline-ai-popover"
+            className={`inline-ai-popover ${mode === 'chat' ? 'inline-ai-popover-chat' : ''}`}
             style={{ top: position.top, left: Math.max(16, position.left) }}
         >
             {/* 模式选择 */}
@@ -700,59 +983,149 @@ function InlineAI({ editor, onAiRequest, onArchiveGeneration, contextItems, cont
                 ))}
             </div>
 
-            {/* 参考设定集（可折叠） */}
-            <InlineContextPanel
-                contextItems={contextItems}
-                contextSelection={contextSelection}
-                setContextSelection={setContextSelection}
-                onJumpToNode={(nodeId) => {
-                    setJumpToNodeId(nodeId);
-                    setShowSettings(true);
-                }}
-            />
+            {/* ===== Chat 模式：聊天面板 ===== */}
+            {mode === 'chat' ? (
+                <>
+                    {/* 聊天头部 */}
+                    <div className="chat-header">
+                        <div className="chat-header-icon">✦</div>
+                        <div className="chat-header-text">
+                            <span className="chat-header-title">AI 问答助手</span>
+                            <span className="chat-header-subtitle">基于你的作品上下文回答，不修改原文</span>
+                        </div>
+                    </div>
 
-            {/* 指令输入 */}
-            <div className="inline-ai-input-row">
-                <input
-                    ref={inputRef}
-                    className="inline-ai-input"
-                    placeholder={mode === 'continue' ? '补充指示（可选），如：写一段打斗场景' : '改写指示（可选），如：更有诗意'}
-                    value={instruction}
-                    onChange={e => setInstruction(e.target.value)}
-                    onKeyDown={e => {
-                        if (e.key === 'Enter' && !streaming) {
-                            e.preventDefault();
-                            generate();
-                        }
-                    }}
-                    disabled={streaming}
-                />
-                {streaming ? (
-                    <button className="inline-ai-stop-btn" onClick={stop}>
-                        ⬛ 停止
-                    </button>
-                ) : (
-                    <button className="inline-ai-go-btn" onClick={generate}>
-                        ✦ 生成
-                    </button>
-                )}
-            </div>
+                    {/* 消息区域 */}
+                    <div className="inline-ai-chat-panel" ref={chatPanelRef}>
+                        {chatMessages.length === 0 && !chatAnswer && (
+                            <div className="inline-ai-chat-empty">
+                                <div className="chat-empty-icon">💬</div>
+                                <div className="chat-empty-title">向 AI 提问</div>
+                                <div className="chat-empty-hints">
+                                    <span className="chat-empty-hint">📖 这段情节的伏笔是什么？</span>
+                                    <span className="chat-empty-hint">🧑 角色性格分析</span>
+                                    <span className="chat-empty-hint">✍️ 写作手法建议</span>
+                                </div>
+                            </div>
+                        )}
+                        {chatMessages.map((msg, i) => (
+                            <div key={i} className={`inline-ai-chat-msg ${msg.role === 'user' ? 'chat-msg-user' : 'chat-msg-ai'}`}>
+                                <div className="chat-msg-avatar">
+                                    {msg.role === 'user' ? '🧑' : '✦'}
+                                </div>
+                                <div className="chat-msg-bubble">{msg.content}</div>
+                            </div>
+                        ))}
+                        {chatAnswer && (
+                            <div className="inline-ai-chat-msg chat-msg-ai">
+                                <div className="chat-msg-avatar">✦</div>
+                                <div className="chat-msg-bubble">
+                                    {chatAnswer}
+                                    <span className="streaming-cursor">▊</span>
+                                </div>
+                            </div>
+                        )}
+                    </div>
 
-            {/* 状态提示 */}
-            {streaming && (
-                <div className="inline-ai-status">
-                    <span className="streaming-cursor">▊</span> AI 正在写入编辑器…
-                </div>
-            )}
-            {!streaming && selectedText && (
-                <div className="inline-ai-hint">
-                    已选中 {selectedText.length} 字
-                </div>
-            )}
-            {!streaming && !selectedText && (
-                <div className="inline-ai-hint">
-                    将在光标处续写 · Ctrl+J 打开/关闭
-                </div>
+                    {/* 输入区 */}
+                    <div className="chat-input-area">
+                        <div className="inline-ai-input-row">
+                            <input
+                                ref={chatInputRef}
+                                className="inline-ai-input"
+                                placeholder="问问关于你作品的任何问题…"
+                                value={instruction}
+                                onChange={e => setInstruction(e.target.value)}
+                                onKeyDown={e => {
+                                    if (e.key === 'Enter' && !chatStreaming) {
+                                        e.preventDefault();
+                                        generateChat(instruction);
+                                        setInstruction('');
+                                    }
+                                }}
+                                disabled={chatStreaming}
+                            />
+                            {chatStreaming ? (
+                                <button className="inline-ai-stop-btn" onClick={() => {
+                                    if (abortRef.current) { abortRef.current.abort(); abortRef.current = null; }
+                                    setChatStreaming(false);
+                                }}>
+                                    ⬛
+                                </button>
+                            ) : (
+                                <button className="chat-send-btn" onClick={() => {
+                                    generateChat(instruction);
+                                    setInstruction('');
+                                }} disabled={!instruction.trim()}>
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13" /><polygon points="22 2 15 22 11 13 2 9 22 2" /></svg>
+                                </button>
+                            )}
+                            {chatMessages.length > 0 && !chatStreaming && (
+                                <button className="chat-clear-btn" onClick={() => { setChatMessages([]); setChatAnswer(''); }} title="清空对话">
+                                    清空
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                </>
+
+            ) : (
+                <>
+                    {/* 参考设定集（可折叠） */}
+                    <InlineContextPanel
+                        contextItems={contextItems}
+                        contextSelection={contextSelection}
+                        setContextSelection={setContextSelection}
+                        onJumpToNode={(nodeId) => {
+                            setJumpToNodeId(nodeId);
+                            setShowSettings(true);
+                        }}
+                    />
+
+                    {/* 指令输入 */}
+                    <div className="inline-ai-input-row">
+                        <input
+                            ref={inputRef}
+                            className="inline-ai-input"
+                            placeholder={mode === 'continue' ? '补充指示（可选），如：写一段打斗场景' : '改写指示（可选），如：更有诗意'}
+                            value={instruction}
+                            onChange={e => setInstruction(e.target.value)}
+                            onKeyDown={e => {
+                                if (e.key === 'Enter' && !streaming) {
+                                    e.preventDefault();
+                                    generate();
+                                }
+                            }}
+                            disabled={streaming}
+                        />
+                        {streaming ? (
+                            <button className="inline-ai-stop-btn" onClick={stop}>
+                                ⬛ 停止
+                            </button>
+                        ) : (
+                            <button className="inline-ai-go-btn" onClick={generate}>
+                                ✦ 生成
+                            </button>
+                        )}
+                    </div>
+
+                    {/* 状态提示 */}
+                    {streaming && (
+                        <div className="inline-ai-status">
+                            <span className="streaming-cursor">▊</span> AI 正在写入编辑器…
+                        </div>
+                    )}
+                    {!streaming && selectedText && (
+                        <div className="inline-ai-hint">
+                            已选中 {selectedText.length} 字
+                        </div>
+                    )}
+                    {!streaming && !selectedText && (
+                        <div className="inline-ai-hint">
+                            将在光标处续写 · Ctrl+J 打开/关闭
+                        </div>
+                    )}
+                </>
             )}
         </div>
     );

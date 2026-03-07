@@ -503,7 +503,14 @@
     "themeWarm": "Warm Classic",
     "themeWarmDesc": "Eye-friendly retro paper texture, focused immersion",
     "themeModern": "Modern Glass",
-    "themeModernDesc": "Minimal white-cool grey with premium frosted glass experience"
+    "themeModernDesc": "Minimal white-cool grey with premium frosted glass experience",
+    "layoutLabel": "Layout Mode",
+    "sidebarLayoutLabel": "Left Chapter List",
+    "aiSidebarLayoutLabel": "Right AI Assistant",
+    "layoutOverlay": "Overlay",
+    "layoutPush": "Push",
+    "layoutOverlayDesc": "Sidebar floats over the editor",
+    "layoutPushDesc": "Sidebar pushes the editor aside"
   },
   "bookInfo": {
     "intro": "💡 This information helps AI understand your work's direction and style. Even filling in just one or two fields will significantly improve AI quality.",

@@ -9,7 +9,7 @@ import { WRITING_MODES, getAllWorks, getSettingsNodes, createWorkNode, saveSetti
 import { detectConflicts, mergeChapters } from '../lib/chapter-number';
 import { estimateTokens } from '../lib/context-engine';
 
-export default function Sidebar({ onOpenHelp, onToggle, editorRef }) {
+export default function Sidebar({ onOpenHelp, onToggle, editorRef, pushMode }) {
     const {
         chapters, addChapter, setChapters, updateChapter: updateChapterStore,
         activeChapterId, setActiveChapterId,
@@ -285,7 +285,7 @@ export default function Sidebar({ onOpenHelp, onToggle, editorRef }) {
 
     return (
         <>
-            <aside className={`sidebar ${sidebarOpen ? '' : 'collapsed'}`}>
+            <aside className={`sidebar ${sidebarOpen ? '' : 'collapsed'}${pushMode ? ' push-mode' : ''}`}>
                 {/* ===== 顶部关闭按钮 ===== */}
                 <div className="sidebar-top-row">
                     <button className="btn btn-ghost btn-icon btn-sm" onClick={() => onToggle?.()} title={t('sidebar.collapseSidebar')} style={{ fontSize: '16px' }}>

@@ -112,6 +112,8 @@ const DEFAULT_SETTINGS = {
         apiKey: '',
         baseUrl: 'https://open.bigmodel.cn/api/paas/v4',
         model: 'glm-4-flash',
+        // 每个供应商独立保存的配置 { [key]: { apiKey, baseUrl, model, apiFormat? } }
+        providerConfigs: {},
         useCustomEmbed: false, // 是否使用独立的 Embedding API
         embedProvider: 'zhipu',
         embedApiKey: '',
@@ -198,7 +200,24 @@ export function getProjectSettings() {
     try {
         const data = localStorage.getItem(SETTINGS_KEY);
         if (!data) return DEFAULT_SETTINGS;
-        return { ...DEFAULT_SETTINGS, ...JSON.parse(data) };
+        const settings = { ...DEFAULT_SETTINGS, ...JSON.parse(data) };
+        // 自动迁移：旧数据没有 providerConfigs 时，将当前活跃供应商的配置种入
+        if (settings.apiConfig && !settings.apiConfig.providerConfigs) {
+            settings.apiConfig.providerConfigs = {};
+        }
+        if (settings.apiConfig?.apiKey && settings.apiConfig.providerConfigs &&
+            Object.keys(settings.apiConfig.providerConfigs).length === 0) {
+            const p = settings.apiConfig.provider;
+            if (p) {
+                settings.apiConfig.providerConfigs[p] = {
+                    apiKey: settings.apiConfig.apiKey,
+                    baseUrl: settings.apiConfig.baseUrl || '',
+                    model: settings.apiConfig.model || '',
+                    apiFormat: settings.apiConfig.apiFormat || '',
+                };
+            }
+        }
+        return settings;
     } catch {
         return DEFAULT_SETTINGS;
     }

@@ -503,7 +503,14 @@
         "themeWarm": "经典纸张 (Warm Classic)",
         "themeWarmDesc": "护眼的复古纸张质感，专注沉浸",
         "themeModern": "现代通透 (Modern Glass)",
-        "themeModernDesc": "极简白冷灰搭配高级毛玻璃体验"
+        "themeModernDesc": "极简白冷灰搭配高级毛玻璃体验",
+        "layoutLabel": "布局模式",
+        "sidebarLayoutLabel": "左侧章节列表",
+        "aiSidebarLayoutLabel": "右侧 AI 助手",
+        "layoutOverlay": "覆盖",
+        "layoutPush": "挤开",
+        "layoutOverlayDesc": "侧栏浮在编辑区上方",
+        "layoutPushDesc": "侧栏挤开编辑区"
     },
     "bookInfo": {
         "intro": "💡 这些信息帮助AI理解你的作品定位和风格，即使只填一两项也会大幅提升AI质量。",

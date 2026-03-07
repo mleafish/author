@@ -24,6 +24,28 @@ export const useAppStore = create((set, get) => ({
     setAiSidebarOpen: (open) => set({ aiSidebarOpen: open }),
     toggleAiSidebar: () => set((state) => ({ aiSidebarOpen: !state.aiSidebarOpen })),
 
+    // --- Sidebar Layout Mode (overlay / push) ---
+    // 默认值必须与 SSR 一致，localStorage 值通过 _hydrateSidebarModes 在客户端 useEffect 中加载
+    sidebarPushMode: false,   // 默认覆盖
+    setSidebarPushMode: (push) => set(() => {
+        if (typeof window !== 'undefined') localStorage.setItem('author-sidebar-push', String(push));
+        return { sidebarPushMode: push };
+    }),
+    aiSidebarPushMode: true,  // 默认挤开
+    setAiSidebarPushMode: (push) => set(() => {
+        if (typeof window !== 'undefined') localStorage.setItem('author-ai-sidebar-push', String(push));
+        return { aiSidebarPushMode: push };
+    }),
+    _hydrateSidebarModes: () => {
+        if (typeof window === 'undefined') return;
+        const sp = localStorage.getItem('author-sidebar-push');
+        const ap = localStorage.getItem('author-ai-sidebar-push');
+        const updates = {};
+        if (sp !== null) updates.sidebarPushMode = sp === 'true';
+        if (ap !== null) updates.aiSidebarPushMode = ap === 'true';
+        if (Object.keys(updates).length) set(updates);
+    },
+
     showSettings: false,
     setShowSettings: (show) => set({ showSettings: show }),
 

@@ -799,26 +799,53 @@ export default function SettingsPanel() {
 }
 
 const PROVIDERS = [
+    // === 国内供应商 ===
     { key: 'zhipu', label: '智谱AI (GLM)', baseUrl: 'https://open.bigmodel.cn/api/paas/v4', models: ['glm-4-flash', 'glm-4-plus', 'glm-4-long', 'glm-4'] },
     { key: 'deepseek', label: 'DeepSeek', baseUrl: 'https://api.deepseek.com/v1', models: ['deepseek-chat', 'deepseek-reasoner'] },
-    { key: 'openai', label: 'OpenAI', baseUrl: 'https://api.openai.com/v1', models: ['gpt-4o-mini', 'gpt-4o', 'gpt-4-turbo', 'gpt-3.5-turbo'] },
-    { key: 'claude', label: 'Claude (Anthropic)', baseUrl: 'https://api.anthropic.com', models: ['claude-sonnet-4-20250514', 'claude-3-7-sonnet-20250219', 'claude-3-5-haiku-20241022'], apiFormat: 'anthropic' },
-    { key: 'gemini', label: 'Gemini (OpenAI兼容)', baseUrl: 'https://generativelanguage.googleapis.com/v1beta/openai', models: ['gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-1.5-flash', 'gemini-1.5-pro'] },
-    { key: 'gemini-native', label: 'Gemini（原生格式）', baseUrl: 'https://generativelanguage.googleapis.com/v1beta', models: ['gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-1.5-flash', 'gemini-1.5-pro'] },
-    { key: 'openai-responses', label: 'OpenAI Responses', baseUrl: 'https://api.openai.com/v1', models: [] },
-    { key: 'bailian', label: '阿里云百炼', baseUrl: 'https://dashscope.aliyuncs.com/compatible-mode/v1', anthropicBaseUrl: 'https://dashscope.aliyuncs.com/apps/anthropic', models: ['qwen3.5-plus', 'qwen3-max'], supportedFormats: ['openai', 'anthropic'], defaultFormat: 'openai', allowCustomModel: true },
+    { key: 'bailian', label: '阿里云百炼 (千问)', baseUrl: 'https://dashscope.aliyuncs.com/compatible-mode/v1', anthropicBaseUrl: 'https://dashscope.aliyuncs.com/apps/anthropic', models: ['qwen3.5-plus', 'qwen3-max'], supportedFormats: ['openai', 'anthropic'], defaultFormat: 'openai', allowCustomModel: true },
     { key: 'volcengine', label: '火山引擎 (豆包)', baseUrl: 'https://ark.cn-beijing.volces.com/api/v3', models: [], hint: '需在火山引擎控制台创建推理接入点，填入 endpoint_id 作为模型名' },
+    { key: 'moonshot', label: 'Moonshot (Kimi)', baseUrl: 'https://api.moonshot.cn/v1', models: ['moonshot-v1-8k', 'moonshot-v1-32k', 'moonshot-v1-128k'] },
+    { key: 'stepfun', label: '阶跃星辰 (Step)', baseUrl: 'https://api.stepfun.com/v1', models: ['step-2-16k', 'step-1-8k', 'step-1-32k', 'step-1-128k'] },
+    { key: 'yi', label: '零一万物 (Yi)', baseUrl: 'https://api.lingyiwanwu.com/v1', models: ['yi-lightning', 'yi-large', 'yi-medium', 'yi-spark'] },
+    { key: 'baichuan', label: '百川 (Baichuan)', baseUrl: 'https://api.baichuan-ai.com/v1', models: ['Baichuan4', 'Baichuan3-Turbo', 'Baichuan3-Turbo-128k'] },
+    { key: 'hunyuan', label: '腾讯混元', baseUrl: 'https://api.hunyuan.cloud.tencent.com/v1', models: ['hunyuan-turbo', 'hunyuan-pro', 'hunyuan-standard', 'hunyuan-lite'] },
+    { key: 'baidu', label: '百度文心', baseUrl: 'https://qianfan.baidubce.com/v2', models: ['ernie-4.0-turbo-8k', 'ernie-4.0-8k', 'ernie-3.5-8k', 'ernie-speed-8k'] },
     { key: 'minimax', label: 'MiniMax', baseUrl: 'https://api.minimax.chat/v1', anthropicBaseUrl: 'https://api.minimaxi.com/anthropic', models: ['MiniMax-M2.5', 'MiniMax-M2.1', 'MiniMax-M2.5-highspeed'], supportedFormats: ['openai', 'anthropic'], defaultFormat: 'openai', allowCustomModel: true },
     { key: 'siliconflow', label: 'SiliconFlow (硅基流动)', baseUrl: 'https://api.siliconflow.cn/v1', models: ['deepseek-ai/DeepSeek-V3', 'Qwen/Qwen2.5-72B-Instruct', 'THUDM/glm-4-9b-chat'] },
-    { key: 'moonshot', label: 'Moonshot (Kimi)', baseUrl: 'https://api.moonshot.cn/v1', models: ['moonshot-v1-8k', 'moonshot-v1-32k', 'moonshot-v1-128k'] },
+    // === 国际供应商 ===
+    { key: 'openai', label: 'OpenAI', baseUrl: 'https://api.openai.com/v1', models: ['gpt-4o-mini', 'gpt-4o', 'gpt-4-turbo', 'o3-mini'] },
+    { key: 'claude', label: 'Claude (Anthropic)', baseUrl: 'https://api.anthropic.com', models: ['claude-sonnet-4-20250514', 'claude-3-7-sonnet-20250219', 'claude-3-5-haiku-20241022'], apiFormat: 'anthropic' },
+    { key: 'gemini', label: 'Gemini (OpenAI兼容)', baseUrl: 'https://generativelanguage.googleapis.com/v1beta/openai', models: ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-1.5-pro'] },
+    { key: 'gemini-native', label: 'Gemini（原生格式）', baseUrl: 'https://generativelanguage.googleapis.com/v1beta', models: ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-1.5-pro'] },
+    { key: 'openai-responses', label: 'OpenAI Responses', baseUrl: 'https://api.openai.com/v1', models: [] },
+    { key: 'groq', label: 'Groq', baseUrl: 'https://api.groq.com/openai/v1', models: ['llama-3.3-70b-versatile', 'llama-3.1-8b-instant', 'mixtral-8x7b-32768', 'gemma2-9b-it'] },
+    { key: 'mistral', label: 'Mistral', baseUrl: 'https://api.mistral.ai/v1', models: ['mistral-large-latest', 'mistral-medium-latest', 'mistral-small-latest', 'open-mistral-nemo'] },
+    { key: 'cohere', label: 'Cohere', baseUrl: 'https://api.cohere.com/v2', models: ['command-r-plus', 'command-r', 'command-light'] },
+    { key: 'together', label: 'Together AI', baseUrl: 'https://api.together.xyz/v1', models: ['meta-llama/Llama-3.3-70B-Instruct-Turbo', 'Qwen/Qwen2.5-72B-Instruct-Turbo', 'deepseek-ai/DeepSeek-R1'] },
+    { key: 'perplexity', label: 'Perplexity', baseUrl: 'https://api.perplexity.ai', models: ['sonar-pro', 'sonar', 'sonar-reasoning-pro', 'sonar-reasoning'] },
+    { key: 'xai', label: 'xAI (Grok)', baseUrl: 'https://api.x.ai/v1', models: ['grok-3', 'grok-3-mini', 'grok-2'] },
+    { key: 'cerebras', label: 'Cerebras', baseUrl: 'https://api.cerebras.ai/v1', models: ['llama-3.3-70b', 'llama-3.1-8b'] },
+    { key: 'github', label: 'GitHub Models', baseUrl: 'https://models.inference.ai.azure.com', models: ['gpt-4o', 'gpt-4o-mini', 'Phi-3.5-MoE-instruct'] },
+    // === 聚合/转发 ===
+    { key: 'openrouter', label: 'OpenRouter', baseUrl: 'https://openrouter.ai/api/v1', models: ['google/gemini-2.5-flash-preview', 'anthropic/claude-sonnet-4', 'openai/gpt-4o', 'deepseek/deepseek-chat-v3-0324', 'meta-llama/llama-4-maverick'] },
+    // === 自定义 ===
     { key: 'custom', label: '自定义 (OpenAI兼容)', baseUrl: '', models: [] },
     { key: 'custom-gemini', label: '自定义 (Gemini格式)', baseUrl: '', models: [] },
     { key: 'custom-claude', label: '自定义 (Claude格式)', baseUrl: '', models: [] },
 ];
 
 function PreferencesForm() {
-    const { language, setLanguage, visualTheme, setVisualTheme } = useAppStore();
+    const { language, setLanguage, visualTheme, setVisualTheme, sidebarPushMode, setSidebarPushMode, aiSidebarPushMode, setAiSidebarPushMode } = useAppStore();
     const { t } = useI18n();
+
+    const layoutBtnStyle = (active) => ({
+        flex: 1, padding: '10px 14px',
+        border: active ? '2px solid var(--accent)' : '1px solid var(--border-light)',
+        borderRadius: 'var(--radius-md)',
+        background: active ? 'var(--accent-light)' : 'var(--bg-primary)',
+        cursor: 'pointer', textAlign: 'center', transition: 'all 0.15s',
+        boxShadow: active ? '0 2px 8px var(--accent-glow)' : 'var(--shadow-sm)',
+    });
 
     return (
         <div style={{ maxWidth: 640 }}>
@@ -847,7 +874,7 @@ function PreferencesForm() {
                 </div>
             </div>
 
-            <div style={{ marginBottom: 24 }}>
+            <div style={{ marginBottom: 28 }}>
                 <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', marginBottom: 12 }}>{t('preferences.themeLabel')}</label>
                 <div style={{ display: 'flex', gap: 16 }}>
                     {[{ id: 'warm', label: t('preferences.themeWarm'), desc: t('preferences.themeWarmDesc') }, { id: 'modern', label: t('preferences.themeModern'), desc: t('preferences.themeModernDesc') }].map(theme => (
@@ -874,6 +901,49 @@ function PreferencesForm() {
                     ))}
                 </div>
             </div>
+
+            {/* 布局模式 */}
+            <div style={{ marginBottom: 24 }}>
+                <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', marginBottom: 16 }}>{t('preferences.layoutLabel')}</label>
+
+                {/* 左侧章节列表 */}
+                <div style={{ marginBottom: 14 }}>
+                    <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 8 }}>{t('preferences.sidebarLayoutLabel')}</div>
+                    <div style={{ display: 'flex', gap: 10 }}>
+                        <button style={layoutBtnStyle(!sidebarPushMode)} onClick={() => setSidebarPushMode(false)}>
+                            <div style={{ fontSize: 13, fontWeight: !sidebarPushMode ? 600 : 400, color: !sidebarPushMode ? 'var(--accent)' : 'var(--text-primary)', marginBottom: 3 }}>
+                                {t('preferences.layoutOverlay')}
+                            </div>
+                            <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{t('preferences.layoutOverlayDesc')}</div>
+                        </button>
+                        <button style={layoutBtnStyle(sidebarPushMode)} onClick={() => setSidebarPushMode(true)}>
+                            <div style={{ fontSize: 13, fontWeight: sidebarPushMode ? 600 : 400, color: sidebarPushMode ? 'var(--accent)' : 'var(--text-primary)', marginBottom: 3 }}>
+                                {t('preferences.layoutPush')}
+                            </div>
+                            <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{t('preferences.layoutPushDesc')}</div>
+                        </button>
+                    </div>
+                </div>
+
+                {/* 右侧 AI 助手 */}
+                <div>
+                    <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 8 }}>{t('preferences.aiSidebarLayoutLabel')}</div>
+                    <div style={{ display: 'flex', gap: 10 }}>
+                        <button style={layoutBtnStyle(!aiSidebarPushMode)} onClick={() => setAiSidebarPushMode(false)}>
+                            <div style={{ fontSize: 13, fontWeight: !aiSidebarPushMode ? 600 : 400, color: !aiSidebarPushMode ? 'var(--accent)' : 'var(--text-primary)', marginBottom: 3 }}>
+                                {t('preferences.layoutOverlay')}
+                            </div>
+                            <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{t('preferences.layoutOverlayDesc')}</div>
+                        </button>
+                        <button style={layoutBtnStyle(aiSidebarPushMode)} onClick={() => setAiSidebarPushMode(true)}>
+                            <div style={{ fontSize: 13, fontWeight: aiSidebarPushMode ? 600 : 400, color: aiSidebarPushMode ? 'var(--accent)' : 'var(--text-primary)', marginBottom: 3 }}>
+                                {t('preferences.layoutPush')}
+                            </div>
+                            <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{t('preferences.layoutPushDesc')}</div>
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }
@@ -888,6 +958,7 @@ function ApiConfigForm({ data, onChange }) {
     const [savedProfiles, setSavedProfiles] = useState([]);
     const [profileName, setProfileName] = useState('');
     const [showSaveInput, setShowSaveInput] = useState(false);
+    const [providerSearch, setProviderSearch] = useState('');
     const { t } = useI18n();
 
     // 根据 provider 和 apiFormat 获取正确的 baseUrl
@@ -929,25 +1000,43 @@ function ApiConfigForm({ data, onChange }) {
 
     const handleProviderChange = (providerKey) => {
         const provider = PROVIDERS.find(p => p.key === providerKey);
-        if (provider) {
-            const defaultFormat = provider.defaultFormat || 'openai';
-            const newConfig = {
-                ...data,
-                provider: providerKey,
-                baseUrl: providerKey === 'custom' ? '' : getBaseUrl(providerKey, provider.supportedFormats ? defaultFormat : undefined),
-                model: providerKey === 'custom' ? '' : (provider.models[0] || data.model)
+        if (!provider) return;
+
+        // 1. 保存当前供应商配置到 providerConfigs
+        const configs = { ...(data.providerConfigs || {}) };
+        if (data.provider) {
+            configs[data.provider] = {
+                apiKey: data.apiKey || '',
+                baseUrl: data.baseUrl || '',
+                model: data.model || '',
+                apiFormat: data.apiFormat || '',
             };
-            // 设置默认 apiFormat
-            if (provider.supportedFormats) {
-                newConfig.apiFormat = defaultFormat;
-            } else if (provider.apiFormat) {
-                newConfig.apiFormat = provider.apiFormat;
-            } else {
-                // 不需要 apiFormat 的 provider，清除该字段
-                delete newConfig.apiFormat;
-            }
-            onChange(newConfig);
         }
+
+        // 2. 从 providerConfigs 加载目标供应商已保存的配置
+        const saved = configs[providerKey] || {};
+        const defaultFormat = provider.defaultFormat || 'openai';
+        const isCustom = ['custom', 'custom-gemini', 'custom-claude'].includes(providerKey);
+
+        const newConfig = {
+            ...data,
+            providerConfigs: configs,
+            provider: providerKey,
+            apiKey: saved.apiKey || '',
+            baseUrl: isCustom ? (saved.baseUrl || '') : (saved.baseUrl || getBaseUrl(providerKey, provider.supportedFormats ? defaultFormat : undefined)),
+            model: saved.model || (isCustom ? '' : (provider.models[0] || '')),
+        };
+
+        // 设置 apiFormat
+        if (provider.supportedFormats) {
+            newConfig.apiFormat = saved.apiFormat || defaultFormat;
+        } else if (provider.apiFormat) {
+            newConfig.apiFormat = provider.apiFormat;
+        } else {
+            delete newConfig.apiFormat;
+        }
+
+        onChange(newConfig);
         setTestStatus(null);
         setFetchedModels(null);
         setFetchedEmbedModels(null);
@@ -1045,277 +1134,252 @@ function ApiConfigForm({ data, onChange }) {
 
             <p style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 16 }}>{t('apiConfig.intro')}</p>
 
-            {/* 供应商选择 */}
-            <div style={{ marginBottom: 14 }}>
-                <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', marginBottom: 8 }}>{t('apiConfig.provider')}</label>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 6 }}>
-                    {PROVIDERS.map(p => (
-                        <button key={p.key} style={{ padding: '8px 12px', border: data.provider === p.key ? '2px solid var(--accent)' : '1px solid var(--border-light)', borderRadius: 'var(--radius-md)', background: data.provider === p.key ? 'var(--accent-light)' : 'var(--bg-primary)', cursor: 'pointer', fontSize: 12, fontWeight: data.provider === p.key ? 600 : 400, color: data.provider === p.key ? 'var(--accent)' : 'var(--text-primary)', transition: 'all 0.15s' }} onClick={() => handleProviderChange(p.key)}>{p.label}</button>
-                    ))}
+            {/* ===== 供应商左右分栏 ===== */}
+            <div className="provider-split">
+                {/* 左侧：供应商列表 */}
+                <div className="provider-list">
+                    <input
+                        className="provider-search"
+                        placeholder="🔍 搜索供应商..."
+                        value={providerSearch}
+                        onChange={e => setProviderSearch(e.target.value)}
+                    />
+                    {[
+                        { group: '🇨🇳 国内', keys: ['zhipu', 'deepseek', 'bailian', 'volcengine', 'moonshot', 'stepfun', 'yi', 'baichuan', 'hunyuan', 'baidu', 'minimax', 'siliconflow'] },
+                        { group: '🌍 国际', keys: ['openai', 'claude', 'gemini', 'gemini-native', 'openai-responses', 'groq', 'mistral', 'cohere', 'together', 'perplexity', 'xai', 'cerebras', 'github'] },
+                        { group: '🔀 聚合', keys: ['openrouter'] },
+                        { group: '⚙️ 自定义', keys: ['custom', 'custom-gemini', 'custom-claude'] },
+                    ].map(section => {
+                        const items = section.keys
+                            .map(k => PROVIDERS.find(p => p.key === k))
+                            .filter(Boolean)
+                            .filter(p => !providerSearch || p.label.toLowerCase().includes(providerSearch.toLowerCase()) || p.key.includes(providerSearch.toLowerCase()));
+                        if (items.length === 0) return null;
+                        return (
+                            <div key={section.group}>
+                                <div className="provider-group-header">{section.group}</div>
+                                {items.map(p => {
+                                    const hasKey = !!(data.providerConfigs?.[p.key]?.apiKey || (data.provider === p.key && data.apiKey));
+                                    return (
+                                        <button
+                                            key={p.key}
+                                            className={`provider-item ${data.provider === p.key ? 'active' : ''}`}
+                                            onClick={() => handleProviderChange(p.key)}
+                                        >
+                                            <span className="provider-item-name">{p.label}</span>
+                                            {hasKey && <span className="provider-item-check">✓</span>}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        );
+                    })}
                 </div>
-                {data.provider === 'gemini-native' && (
-                    <div style={{ marginTop: 8, padding: '8px 12px', background: 'var(--accent-light)', borderRadius: 'var(--radius-sm)', fontSize: 11, color: 'var(--accent)', lineHeight: 1.6 }}>
-                        {t('apiConfig.geminiNativeHint')}
-                    </div>
-                )}
-                {data.provider === 'volcengine' && (
-                    <div style={{ marginTop: 8, padding: '8px 12px', background: 'var(--accent-light)', borderRadius: 'var(--radius-sm)', fontSize: 11, color: 'var(--accent)', lineHeight: 1.6 }}>
-                        火山引擎需要先在控制台创建「推理接入点」，然后将 endpoint_id（如 ep-xxxx）填入模型字段。支持豆包系列模型。
-                    </div>
-                )}
-                {data.provider === 'bailian' && (
-                    <div style={{ marginTop: 8 }}>
-                        <div style={{ padding: '8px 12px', background: 'var(--accent-light)', borderRadius: 'var(--radius-sm)', fontSize: 11, color: 'var(--accent)', lineHeight: 1.6, marginBottom: 8 }}>
-                            阿里云百炼平台 API Key 在「模型服务灵积」控制台获取，支持通义千问系列模型。
-                        </div>
-                        <div style={{ marginTop: 6 }}>
-                            <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: 'var(--text-secondary)', marginBottom: 4 }}>API 格式</label>
-                            <div style={{ display: 'flex', gap: 6 }}>
-                                {[
-                                    { key: 'openai', label: 'OpenAI 兼容' },
-                                    { key: 'anthropic', label: 'Anthropic 兼容' },
-                                ].map(opt => (
-                                    <button key={opt.key} style={{ padding: '5px 12px', border: (data.apiFormat || 'openai') === opt.key ? '2px solid var(--accent)' : '1px solid var(--border-light)', borderRadius: 'var(--radius-sm)', background: (data.apiFormat || 'openai') === opt.key ? 'var(--accent-light)' : 'var(--bg-primary)', cursor: 'pointer', fontSize: 11, fontWeight: (data.apiFormat || 'openai') === opt.key ? 600 : 400, color: (data.apiFormat || 'openai') === opt.key ? 'var(--accent)' : 'var(--text-primary)', transition: 'all 0.15s' }} onClick={() => handleApiFormatChange(opt.key)}>{opt.label}</button>
-                                ))}
-                            </div>
-                            <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 3 }}>Anthropic 格式可解锁 Claude 代码复用，OpenAI 格式兼容性更广</div>
-                        </div>
-                    </div>
-                )}
-                {data.provider === 'minimax' && (
-                    <div style={{ marginTop: 8 }}>
-                        <div style={{ padding: '8px 12px', background: 'var(--accent-light)', borderRadius: 'var(--radius-sm)', fontSize: 11, color: 'var(--accent)', lineHeight: 1.6, marginBottom: 8 }}>
-                            MiniMax API Key 在开放平台获取，支持 abab 系列和 MiniMax-Text 系列模型。
-                        </div>
-                        <div style={{ marginTop: 6 }}>
-                            <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: 'var(--text-secondary)', marginBottom: 4 }}>API 格式</label>
-                            <div style={{ display: 'flex', gap: 6 }}>
-                                {[
-                                    { key: 'openai', label: 'OpenAI 兼容' },
-                                    { key: 'anthropic', label: 'Anthropic 兼容' },
-                                ].map(opt => (
-                                    <button key={opt.key} style={{ padding: '5px 12px', border: (data.apiFormat || 'openai') === opt.key ? '2px solid var(--accent)' : '1px solid var(--border-light)', borderRadius: 'var(--radius-sm)', background: (data.apiFormat || 'openai') === opt.key ? 'var(--accent-light)' : 'var(--bg-primary)', cursor: 'pointer', fontSize: 11, fontWeight: (data.apiFormat || 'openai') === opt.key ? 600 : 400, color: (data.apiFormat || 'openai') === opt.key ? 'var(--accent)' : 'var(--text-primary)', transition: 'all 0.15s' }} onClick={() => handleApiFormatChange(opt.key)}>{opt.label}</button>
-                                ))}
-                            </div>
-                            <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 3 }}>Anthropic 格式可解锁 Claude 代码复用，OpenAI 格式兼容性更广</div>
-                        </div>
-                    </div>
-                )}
-                {/* ===== 统一搜索工具配置 ===== */}
-                <div style={{ marginTop: 10, padding: '12px 14px', borderRadius: 'var(--radius-md)', background: 'var(--bg-secondary)', border: '1px solid var(--border-light)' }}>
-                    <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-secondary)', marginBottom: 8 }}>🔍 {t('apiConfig.searchTools') || '联网搜索'}</div>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: 12, color: 'var(--text-primary)', marginBottom: 4 }}>
-                        <input
-                            type="checkbox"
-                            checked={data.tools?.searchEnabled || false}
-                            onChange={e => onChange({ ...data, tools: { ...(data.tools || {}), searchEnabled: e.target.checked } })}
-                            style={{ margin: 0 }}
-                        />
-                        {t('apiConfig.enableSearch') || '启用联网搜索'}
-                    </label>
-                    <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 6, paddingLeft: 22 }}>
-                        {t('apiConfig.enableSearchDesc') || '让 AI 搜索互联网获取最新信息，搜索来源会显示在回复中'}
+
+                {/* 右侧：选中供应商的配置 */}
+                <div className="provider-detail">
+                    <div className="provider-detail-header">
+                        <span style={{ fontSize: 15, fontWeight: 600 }}>{currentProvider.label}</span>
+                        <span style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'monospace' }}>{currentProvider.key}</span>
                     </div>
 
-                    {/* 搜索模式选择 — 有内置搜索的供应商可选 */}
-                    {data.tools?.searchEnabled && ['openai', 'openai-responses', 'custom', 'custom-gemini'].includes(data.provider) && (
-                        <div style={{ paddingLeft: 22, marginBottom: 6 }}>
-                            <div style={{ fontSize: 11, fontWeight: 500, color: 'var(--text-muted)', marginBottom: 4 }}>{t('apiConfig.searchMode') || '搜索方式'}</div>
+                    {/* 供应商特定提示 */}
+                    {data.provider === 'gemini-native' && (
+                        <div className="provider-hint">{t('apiConfig.geminiNativeHint')}</div>
+                    )}
+                    {data.provider === 'volcengine' && (
+                        <div className="provider-hint">火山引擎需要先在控制台创建「推理接入点」，然后将 endpoint_id（如 ep-xxxx）填入模型字段。支持豆包系列模型。</div>
+                    )}
+                    {data.provider === 'bailian' && (
+                        <div className="provider-hint">阿里云百炼平台 API Key 在「模型服务灵积」控制台获取，支持通义千问系列模型。</div>
+                    )}
+                    {data.provider === 'minimax' && (
+                        <div className="provider-hint">MiniMax API Key 在开放平台获取，支持 abab 系列和 MiniMax-Text 系列模型。</div>
+                    )}
+
+                    {/* API 格式选择（多格式供应商） */}
+                    {(data.provider === 'bailian' || data.provider === 'minimax') && (
+                        <div style={{ marginBottom: 12 }}>
+                            <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: 'var(--text-secondary)', marginBottom: 4 }}>API 格式</label>
                             <div style={{ display: 'flex', gap: 6 }}>
                                 {[
-                                    { key: 'builtin', label: t('apiConfig.searchBuiltin') || '内置搜索' },
-                                    { key: 'external', label: t('apiConfig.searchExternal') || '外部搜索' },
+                                    { key: 'openai', label: 'OpenAI 兼容' },
+                                    { key: 'anthropic', label: 'Anthropic 兼容' },
                                 ].map(opt => (
-                                    <button key={opt.key} style={{ padding: '3px 12px', border: (data.tools?.searchMode || 'builtin') === opt.key ? '2px solid var(--accent)' : '1px solid var(--border-light)', borderRadius: 'var(--radius-sm)', background: (data.tools?.searchMode || 'builtin') === opt.key ? 'var(--accent-light)' : 'var(--bg-primary)', cursor: 'pointer', fontSize: 11, fontWeight: (data.tools?.searchMode || 'builtin') === opt.key ? 600 : 400, color: (data.tools?.searchMode || 'builtin') === opt.key ? 'var(--accent)' : 'var(--text-primary)', transition: 'all 0.15s' }}
-                                        onClick={() => onChange({ ...data, tools: { ...(data.tools || {}), searchMode: opt.key } })}>{opt.label}</button>
+                                    <button key={opt.key} style={{ padding: '5px 12px', border: (data.apiFormat || 'openai') === opt.key ? '2px solid var(--accent)' : '1px solid var(--border-light)', borderRadius: 'var(--radius-sm)', background: (data.apiFormat || 'openai') === opt.key ? 'var(--accent-light)' : 'var(--bg-primary)', cursor: 'pointer', fontSize: 11, fontWeight: (data.apiFormat || 'openai') === opt.key ? 600 : 400, color: (data.apiFormat || 'openai') === opt.key ? 'var(--accent)' : 'var(--text-primary)', transition: 'all 0.15s' }} onClick={() => handleApiFormatChange(opt.key)}>{opt.label}</button>
                                 ))}
                             </div>
-                            {(data.tools?.searchMode || 'builtin') === 'builtin' && (
-                                <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 3 }}>
-                                    {['custom', 'custom-gemini'].includes(data.provider)
-                                        ? (t('apiConfig.searchBuiltinCustomHint') || '使用供应商自带的搜索功能（代理需支持转发 tools 参数）')
-                                        : (t('apiConfig.searchBuiltinHint') || '使用供应商自带的搜索功能，无需额外配置')}
-                                </div>
-                            )}
+                            <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 3 }}>Anthropic 格式可解锁 Claude 代码复用，OpenAI 格式兼容性更广</div>
                         </div>
                     )}
 
-                    {/* 外部搜索引擎配置 */}
-                    {data.tools?.searchEnabled && (
-                        // 显示条件：明确选了外部搜索，或者供应商没有内置搜索
-                        (data.tools?.searchMode === 'external' || !['openai', 'openai-responses', 'custom', 'custom-gemini', 'gemini-native'].includes(data.provider)) && (
-                            <div style={{ paddingLeft: 22, marginTop: 6, padding: '8px 10px', borderRadius: 6, background: 'var(--bg-primary)', border: '1px solid var(--border-light)' }}>
-                                <div style={{ fontSize: 11, fontWeight: 500, color: 'var(--text-muted)', marginBottom: 6 }}>{t('apiConfig.searchEngine') || '搜索引擎'}</div>
-                                <div style={{ display: 'flex', gap: 6, marginBottom: 8 }}>
-                                    {[
-                                        { key: 'tavily', label: 'Tavily' },
-                                        { key: 'exa', label: 'Exa' },
-                                    ].map(opt => (
-                                        <button key={opt.key} style={{ padding: '3px 14px', border: (data.searchConfig?.provider || 'tavily') === opt.key ? '2px solid var(--accent)' : '1px solid var(--border-light)', borderRadius: 'var(--radius-sm)', background: (data.searchConfig?.provider || 'tavily') === opt.key ? 'var(--accent-light)' : 'var(--bg-primary)', cursor: 'pointer', fontSize: 11, fontWeight: (data.searchConfig?.provider || 'tavily') === opt.key ? 600 : 400, color: (data.searchConfig?.provider || 'tavily') === opt.key ? 'var(--accent)' : 'var(--text-primary)', transition: 'all 0.15s' }}
-                                            onClick={() => onChange({ ...data, searchConfig: { ...(data.searchConfig || {}), provider: opt.key } })}>{opt.label}</button>
-                                    ))}
-                                </div>
-                                <input
-                                    type="password"
-                                    placeholder={(data.searchConfig?.provider || 'tavily') === 'exa' ? 'Exa API Key' : 'Tavily API Key (tvly-...)'}
-                                    value={data.searchConfig?.apiKey || ''}
-                                    onChange={e => onChange({ ...data, searchConfig: { ...(data.searchConfig || {}), provider: data.searchConfig?.provider || 'tavily', apiKey: e.target.value } })}
-                                    style={{ width: '100%', padding: '6px 10px', border: '1px solid var(--border-light)', borderRadius: 'var(--radius-sm)', background: 'var(--bg-primary)', color: 'var(--text-primary)', fontSize: 12, fontFamily: 'var(--font-ui)', outline: 'none' }}
-                                />
-                                <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 4 }}>
-                                    {(data.searchConfig?.provider || 'tavily') === 'exa'
-                                        ? (t('apiConfig.exaHint') || '按量计费，注册赠送额度 → exa.ai')
-                                        : (t('apiConfig.tavilyHint') || '免费 1000次/月 → tavily.com')}
-                                </div>
+                    {/* API Key */}
+                    <FieldInput label="API Key" value={data.apiKey} onChange={v => update('apiKey', v)} placeholder={t('apiConfig.apiKeyPlaceholder')} secret />
+                    {data.apiKey && <div style={{ fontSize: 11, color: 'var(--success)', marginTop: -10, marginBottom: 10 }}>{t('apiConfig.apiKeyConfigured')}</div>}
+
+                    {/* 余额查询 */}
+                    {data.apiKey && (
+                        <div style={{ marginBottom: 14, padding: '10px 14px', borderRadius: 'var(--radius-md)', background: 'var(--bg-secondary)', border: '1px solid var(--border-light)' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+                                <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-secondary)' }}>💰 {t('apiConfig.balance') || 'API 余额'}</span>
+                                <button className="btn btn-ghost btn-sm" style={{ fontSize: 11, padding: '3px 10px' }} onClick={handleQueryBalance} disabled={balanceInfo === 'loading'}>
+                                    {balanceInfo === 'loading' ? (t('apiConfig.balanceQuerying') || '查询中...') : (t('apiConfig.balanceQuery') || '查询余额')}
+                                </button>
+                            </div>
+                            {balanceInfo && balanceInfo !== 'loading' && (
                                 <div style={{ marginTop: 8 }}>
-                                    <div style={{ fontSize: 11, fontWeight: 500, color: 'var(--text-muted)', marginBottom: 4 }}>🔗 {t('apiConfig.searchCustomUrl') || '自定义 API 地址（可选）'}</div>
-                                    <input
-                                        type="text"
-                                        placeholder={(data.searchConfig?.provider || 'tavily') === 'exa' ? 'https://api.exa.ai' : 'https://api.tavily.com'}
-                                        value={data.searchConfig?.baseUrl || ''}
-                                        onChange={e => onChange({ ...data, searchConfig: { ...(data.searchConfig || {}), provider: data.searchConfig?.provider || 'tavily', baseUrl: e.target.value } })}
-                                        style={{ width: '100%', padding: '6px 10px', border: '1px solid var(--border-light)', borderRadius: 'var(--radius-sm)', background: 'var(--bg-primary)', color: 'var(--text-primary)', fontSize: 12, fontFamily: 'var(--font-ui)', outline: 'none' }}
-                                    />
-                                    <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 3 }}>
-                                        {t('apiConfig.searchCustomUrlHint') || '留空使用官方地址，填写后使用自定义中转地址（如号池代理）'}
-                                    </div>
-                                </div>
-                            </div>
-                        )
-                    )}
-
-                    {/* Gemini Code Execution — 仅 Gemini 格式 */}
-                    {['gemini-native', 'custom-gemini'].includes(data.provider) && (
-                        <>
-                            <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: 12, color: 'var(--text-primary)', marginTop: 8 }}>
-                                <input
-                                    type="checkbox"
-                                    checked={data.tools?.codeExecution || false}
-                                    onChange={e => onChange({ ...data, tools: { ...(data.tools || {}), codeExecution: e.target.checked } })}
-                                    style={{ margin: 0 }}
-                                />
-                                💻 {t('apiConfig.toolCodeExecution') || 'Code Execution（代码执行）'}
-                            </label>
-                            <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2, paddingLeft: 22 }}>{t('apiConfig.toolCodeExecutionDesc') || '让 AI 编写并运行代码来解决数学计算等问题，回复中会显示代码和执行结果'}</div>
-                        </>
-                    )}
-                </div>
-                {data.provider === 'openai-responses' && (
-                    <div style={{ marginTop: 10 }}>
-                        <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: 'var(--text-secondary)', marginBottom: 6 }}>思考等级 (Reasoning Effort)</label>
-                        <div style={{ display: 'flex', gap: 6 }}>
-                            {[
-                                { key: 'low', label: 'low' },
-                                { key: 'medium', label: 'medium' },
-                                { key: 'high', label: 'high' },
-                                { key: 'xhigh', label: 'xhigh' },
-                            ].map(opt => (
-                                <button key={opt.key} style={{ padding: '5px 14px', border: (data.reasoningEffort || 'medium') === opt.key ? '2px solid var(--accent)' : '1px solid var(--border-light)', borderRadius: 'var(--radius-sm)', background: (data.reasoningEffort || 'medium') === opt.key ? 'var(--accent-light)' : 'var(--bg-primary)', cursor: 'pointer', fontSize: 12, fontWeight: (data.reasoningEffort || 'medium') === opt.key ? 600 : 400, color: (data.reasoningEffort || 'medium') === opt.key ? 'var(--accent)' : 'var(--text-primary)', transition: 'all 0.15s' }} onClick={() => update('reasoningEffort', opt.key)}>{opt.label}</button>
-                            ))}
-                        </div>
-                        <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>控制模型推理深度，默认 Medium，XHigh 质量最高但更慢</div>
-                    </div>
-                )}
-            </div>
-
-            <FieldInput label="API Key" value={data.apiKey} onChange={v => update('apiKey', v)} placeholder={t('apiConfig.apiKeyPlaceholder')} secret />
-            {data.apiKey && <div style={{ fontSize: 11, color: 'var(--success)', marginTop: -10, marginBottom: 10 }}>{t('apiConfig.apiKeyConfigured')}</div>}
-
-            {/* 余额查询卡片 */}
-            {data.apiKey && (
-                <div style={{
-                    marginBottom: 14, padding: '10px 14px', borderRadius: 'var(--radius-md)',
-                    background: 'var(--bg-secondary)', border: '1px solid var(--border-light)',
-                }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
-                        <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-secondary)' }}>💰 {t('apiConfig.balance') || 'API 余额'}</span>
-                        <button
-                            className="btn btn-ghost btn-sm"
-                            style={{ fontSize: 11, padding: '3px 10px' }}
-                            onClick={handleQueryBalance}
-                            disabled={balanceInfo === 'loading'}
-                        >
-                            {balanceInfo === 'loading' ? (t('apiConfig.balanceQuerying') || '查询中...') : (t('apiConfig.balanceQuery') || '查询余额')}
-                        </button>
-                    </div>
-                    {balanceInfo && balanceInfo !== 'loading' && (
-                        <div style={{ marginTop: 8 }}>
-                            {balanceInfo.error ? (
-                                <div style={{ fontSize: 12, color: 'var(--error)' }}>❌ {balanceInfo.error}</div>
-                            ) : balanceInfo.supported === false ? (
-                                <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>⚠️ {balanceInfo.message || t('apiConfig.balanceNotSupported') || '当前供应商不支持余额查询'}</div>
-                            ) : (
-                                <div>
-                                    <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--accent)', lineHeight: 1.2 }}>
-                                        {balanceInfo.currency === 'CNY' ? '¥' : '$'}{balanceInfo.balance?.toFixed(2)}
-                                        <span style={{ fontSize: 11, fontWeight: 400, color: 'var(--text-muted)', marginLeft: 6 }}>{balanceInfo.currency}</span>
-                                    </div>
-                                    {balanceInfo.detail && (
-                                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px 14px', marginTop: 6, fontSize: 11, color: 'var(--text-muted)' }}>
-                                            {balanceInfo.detail.granted != null && balanceInfo.detail.granted > 0 && <span>赠送: {balanceInfo.detail.granted.toFixed(2)}</span>}
-                                            {balanceInfo.detail.topped_up != null && balanceInfo.detail.topped_up > 0 && <span>充值: {balanceInfo.detail.topped_up.toFixed(2)}</span>}
-                                            {balanceInfo.detail.used != null && <span>已用: {balanceInfo.detail.used.toFixed(2)}</span>}
-                                            {balanceInfo.detail.total_limit != null && <span>额度: {balanceInfo.detail.total_limit.toFixed(2)}</span>}
-                                            {balanceInfo.detail.remaining != null && balanceInfo.detail.total_limit != null && <span>剩余: {balanceInfo.detail.remaining.toFixed(2)}</span>}
+                                    {balanceInfo.error ? (
+                                        <div style={{ fontSize: 12, color: 'var(--error)' }}>❌ {balanceInfo.error}</div>
+                                    ) : !balanceInfo.supported ? (
+                                        <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>⚠️ {t('apiConfig.balanceNotSupported') || '该供应商暂不支持余额查询'}</div>
+                                    ) : (
+                                        <div>
+                                            <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--accent)' }}>
+                                                {balanceInfo.currency} {typeof balanceInfo.balance === 'number' ? balanceInfo.balance.toFixed(2) : balanceInfo.balance}
+                                            </div>
+                                            {balanceInfo.details && <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>{balanceInfo.details}</div>}
+                                            {balanceInfo.source && <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 4 }}>via {balanceInfo.source}</div>}
                                         </div>
                                     )}
-                                    {balanceInfo.source && <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 4 }}>via {balanceInfo.source}</div>}
                                 </div>
                             )}
                         </div>
                     )}
-                </div>
-            )}
 
-            <FieldInput label={isCustom ? t('apiConfig.apiAddress') : t('apiConfig.apiAddressAuto')} value={data.baseUrl} onChange={v => update('baseUrl', v)} placeholder={t('apiConfig.apiAddressPlaceholder')} />
+                    {/* API 地址 */}
+                    <FieldInput label={isCustom ? t('apiConfig.apiAddress') : t('apiConfig.apiAddressAuto')} value={data.baseUrl} onChange={v => update('baseUrl', v)} placeholder={data.provider === 'custom-gemini' ? 'https://generativelanguage.googleapis.com/v1beta' : data.provider === 'custom-claude' ? 'https://api.anthropic.com' : t('apiConfig.apiAddressPlaceholder')} />
 
-            {/* 模型选择 */}
-            {currentProvider.models.length > 0 && !isCustom ? (
-                <div style={{ marginBottom: 14 }}>
-                    <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', marginBottom: 5 }}>
-                        {t('apiConfig.model')}
-                        {data.apiKey && (
-                            <button style={{ marginLeft: 8, fontSize: 11, color: 'var(--accent)', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }} onClick={handleFetchModels} disabled={fetchedModels === 'loading'}>
-                                {fetchedModels === 'loading' ? t('apiConfig.fetching') : t('apiConfig.fetchModels')}
-                            </button>
+                    {/* 模型选择 */}
+                    {currentProvider.models.length > 0 && !isCustom ? (
+                        <div style={{ marginBottom: 14 }}>
+                            <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', marginBottom: 5 }}>
+                                {t('apiConfig.model')}
+                                {data.apiKey && (
+                                    <button style={{ marginLeft: 8, fontSize: 11, color: 'var(--accent)', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }} onClick={handleFetchModels} disabled={fetchedModels === 'loading'}>
+                                        {fetchedModels === 'loading' ? t('apiConfig.fetching') : t('apiConfig.fetchModels')}
+                                    </button>
+                                )}
+                            </label>
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, ...(Array.isArray(fetchedModels) && fetchedModels.length > 20 ? { maxHeight: 200, overflowY: 'auto', padding: 4, border: '1px solid var(--border-light)', borderRadius: 'var(--radius-sm)' } : {}) }}>
+                                {(Array.isArray(fetchedModels) ? fetchedModels.map(m => m.id) : currentProvider.models).map(m => (
+                                    <button key={m} style={{ padding: '5px 12px', border: data.model === m ? '2px solid var(--accent)' : '1px solid var(--border-light)', borderRadius: 'var(--radius-sm)', background: data.model === m ? 'var(--accent-light)' : 'var(--bg-primary)', cursor: 'pointer', fontSize: 12, color: data.model === m ? 'var(--accent)' : 'var(--text-primary)', fontFamily: 'monospace' }} onClick={() => update('model', m)}>{m}</button>
+                                ))}
+                            </div>
+                            {Array.isArray(fetchedModels) && <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>{t('apiConfig.fetchedCount').replace('{count}', fetchedModels.length)}</div>}
+                            {currentProvider.allowCustomModel && (
+                                <div style={{ marginTop: 8 }}>
+                                    <input className="modal-input" style={{ marginBottom: 0 }} value={data.model || ''} onChange={e => update('model', e.target.value)} placeholder="或输入自定义模型名称" />
+                                </div>
+                            )}
+                        </div>
+                    ) : (
+                        <div style={{ marginBottom: 14 }}>
+                            <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', marginBottom: 5 }}>
+                                {t('apiConfig.modelName')}
+                                {data.apiKey && data.baseUrl && (
+                                    <button style={{ marginLeft: 8, fontSize: 11, color: 'var(--accent)', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }} onClick={handleFetchModels} disabled={fetchedModels === 'loading'}>
+                                        {fetchedModels === 'loading' ? t('apiConfig.fetching') : t('apiConfig.fetchModels')}
+                                    </button>
+                                )}
+                            </label>
+                            <input className="modal-input" style={{ marginBottom: 0 }} value={data.model || ''} onChange={e => update('model', e.target.value)} placeholder={data.provider === 'custom-gemini' ? '例如：gemini-2.0-flash' : data.provider === 'custom-claude' ? '例如：claude-sonnet-4-20250514' : '例如：gpt-4o-mini'} />
+                            {Array.isArray(fetchedModels) && fetchedModels.length > 0 && (
+                                <>
+                                    <div style={{ fontSize: 11, color: 'var(--text-muted)', margin: '6px 0 4px' }}>{t('apiConfig.fetchedCountClick').replace('{count}', fetchedModels.length)}</div>
+                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                                        {fetchedModels.map(m => (
+                                            <button key={m.id} style={{ padding: '4px 10px', border: data.model === m.id ? '2px solid var(--accent)' : '1px solid var(--border-light)', borderRadius: 'var(--radius-sm)', background: data.model === m.id ? 'var(--accent-light)' : 'var(--bg-primary)', cursor: 'pointer', fontSize: 11, color: data.model === m.id ? 'var(--accent)' : 'var(--text-primary)', fontFamily: 'monospace' }} onClick={() => update('model', m.id)}>{m.id}</button>
+                                        ))}
+                                    </div>
+                                </>
+                            )}
+                        </div>
+                    )}
+
+                    {/* 连接测试 */}
+                    <div style={{ display: 'flex', gap: 8, marginBottom: 14 }}>
+                        <button className="btn btn-ghost btn-sm" onClick={handleTestConnection} disabled={testStatus === 'loading'} style={{ fontSize: 12 }}>
+                            {testStatus === 'loading' ? '测试中...' : '🔌 测试连接'}
+                        </button>
+                        {testStatus && testStatus !== 'loading' && (
+                            <span style={{ fontSize: 12, color: testStatus === 'success' ? 'var(--success)' : 'var(--error)', alignSelf: 'center' }}>
+                                {testStatus === 'success' ? '✅ 连接成功' : `❌ ${testStatus}`}
+                            </span>
                         )}
-                    </label>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, ...(Array.isArray(fetchedModels) && fetchedModels.length > 20 ? { maxHeight: 200, overflowY: 'auto', padding: 4, border: '1px solid var(--border-light)', borderRadius: 'var(--radius-sm)' } : {}) }}>
-                        {(Array.isArray(fetchedModels) ? fetchedModels.map(m => m.id) : currentProvider.models).map(m => (
-                            <button key={m} style={{ padding: '5px 12px', border: data.model === m ? '2px solid var(--accent)' : '1px solid var(--border-light)', borderRadius: 'var(--radius-sm)', background: data.model === m ? 'var(--accent-light)' : 'var(--bg-primary)', cursor: 'pointer', fontSize: 12, color: data.model === m ? 'var(--accent)' : 'var(--text-primary)', fontFamily: 'monospace' }} onClick={() => update('model', m)}>{m}</button>
-                        ))}
                     </div>
-                    {Array.isArray(fetchedModels) && <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>{t('apiConfig.fetchedCount').replace('{count}', fetchedModels.length)}</div>}
-                    {/* 支持自定义模型的 provider 显示输入框 */}
-                    {currentProvider.allowCustomModel && (
-                        <div style={{ marginTop: 8 }}>
-                            <input className="modal-input" style={{ marginBottom: 0 }} value={data.model || ''} onChange={e => update('model', e.target.value)} placeholder="或输入自定义模型名称" />
+
+                    {/* 搜索工具配置 */}
+                    <div style={{ padding: '12px 14px', borderRadius: 'var(--radius-md)', background: 'var(--bg-secondary)', border: '1px solid var(--border-light)', marginBottom: 12 }}>
+                        <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-secondary)', marginBottom: 8 }}>🔍 {t('apiConfig.searchTools') || '联网搜索'}</div>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: 12, color: 'var(--text-primary)', marginBottom: 4 }}>
+                            <input type="checkbox" checked={data.tools?.searchEnabled || false} onChange={e => onChange({ ...data, tools: { ...(data.tools || {}), searchEnabled: e.target.checked } })} style={{ margin: 0 }} />
+                            {t('apiConfig.enableSearch') || '启用联网搜索'}
+                        </label>
+                        <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 6, paddingLeft: 22 }}>
+                            {t('apiConfig.enableSearchDesc') || '让 AI 搜索互联网获取最新信息，搜索来源会显示在回复中'}
+                        </div>
+                        {data.tools?.searchEnabled && ['openai', 'openai-responses', 'custom', 'custom-gemini'].includes(data.provider) && (
+                            <div style={{ paddingLeft: 22, marginBottom: 6 }}>
+                                <div style={{ display: 'flex', gap: 6 }}>
+                                    {[
+                                        { key: 'builtin', label: t('apiConfig.searchBuiltin') || '内置搜索' },
+                                        { key: 'external', label: t('apiConfig.searchExternal') || '外部搜索' },
+                                    ].map(opt => (
+                                        <button key={opt.key} style={{ padding: '4px 10px', border: (data.tools?.searchMode || 'builtin') === opt.key ? '2px solid var(--accent)' : '1px solid var(--border-light)', borderRadius: 'var(--radius-sm)', background: (data.tools?.searchMode || 'builtin') === opt.key ? 'var(--accent-light)' : 'var(--bg-primary)', cursor: 'pointer', fontSize: 11, fontWeight: (data.tools?.searchMode || 'builtin') === opt.key ? 600 : 400, color: (data.tools?.searchMode || 'builtin') === opt.key ? 'var(--accent)' : 'var(--text-primary)', transition: 'all 0.15s' }} onClick={() => onChange({ ...data, tools: { ...(data.tools || {}), searchMode: opt.key } })}>{opt.label}</button>
+                                    ))}
+                                </div>
+                                {['custom', 'custom-gemini'].includes(data.provider)
+                                    ? <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 3 }}>自定义供应商仅支持 Function Calling (外部搜索) 方式</div>
+                                    : <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 3 }}>{t('apiConfig.searchModeHint') || '内置搜索速度更快，外部搜索可自定义来源'}</div>
+                                }
+                            </div>
+                        )}
+                        {data.tools?.searchEnabled && (
+                            (data.tools?.searchMode === 'external' || !['openai', 'openai-responses', 'custom', 'custom-gemini', 'gemini-native'].includes(data.provider)) && (
+                                <div style={{ paddingLeft: 22, marginTop: 6 }}>
+                                    <div style={{ fontSize: 11, fontWeight: 500, color: 'var(--text-secondary)', marginBottom: 3 }}>{t('apiConfig.searchTool') || '搜索工具'}</div>
+                                    <div style={{ display: 'flex', gap: 6, marginBottom: 8 }}>
+                                        {[
+                                            { key: 'tavily', label: 'Tavily' },
+                                            { key: 'exa', label: 'Exa' },
+                                        ].map(opt => (
+                                            <button key={opt.key} style={{ padding: '4px 10px', border: (data.searchConfig?.tool || 'tavily') === opt.key ? '2px solid var(--accent)' : '1px solid var(--border-light)', borderRadius: 'var(--radius-sm)', background: (data.searchConfig?.tool || 'tavily') === opt.key ? 'var(--accent-light)' : 'var(--bg-primary)', cursor: 'pointer', fontSize: 11, fontWeight: (data.searchConfig?.tool || 'tavily') === opt.key ? 600 : 400, color: (data.searchConfig?.tool || 'tavily') === opt.key ? 'var(--accent)' : 'var(--text-primary)', transition: 'all 0.15s' }} onClick={() => onChange({ ...data, searchConfig: { ...(data.searchConfig || {}), tool: opt.key } })}>{opt.label}</button>
+                                        ))}
+                                    </div>
+                                    <FieldInput label={`${(data.searchConfig?.tool || 'Tavily').charAt(0).toUpperCase() + (data.searchConfig?.tool || 'tavily').slice(1)} API Key`} value={data.searchConfig?.apiKey || ''} onChange={v => onChange({ ...data, searchConfig: { ...(data.searchConfig || {}), apiKey: v } })} placeholder={`填入 ${data.searchConfig?.tool || 'Tavily'} API Key`} secret />
+                                </div>
+                            )
+                        )}
+                        {['gemini-native', 'custom-gemini'].includes(data.provider) && (
+                            <>
+                                <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: 12, color: 'var(--text-primary)', marginTop: 8 }}>
+                                    <input type="checkbox" checked={data.tools?.codeExecution || false} onChange={e => onChange({ ...data, tools: { ...(data.tools || {}), codeExecution: e.target.checked } })} style={{ margin: 0 }} />
+                                    💻 {t('apiConfig.toolCodeExecution') || 'Code Execution（代码执行）'}
+                                </label>
+                                <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2, paddingLeft: 22 }}>{t('apiConfig.toolCodeExecutionDesc') || '让 AI 编写并运行代码来解决数学计算等问题，回复中会显示代码和执行结果'}</div>
+                            </>
+                        )}
+                    </div>
+
+                    {/* Reasoning Effort for OpenAI Responses */}
+                    {data.provider === 'openai-responses' && (
+                        <div style={{ marginBottom: 12 }}>
+                            <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: 'var(--text-secondary)', marginBottom: 6 }}>思考等级 (Reasoning Effort)</label>
+                            <div style={{ display: 'flex', gap: 6 }}>
+                                {[
+                                    { key: 'low', label: 'low' },
+                                    { key: 'medium', label: 'medium' },
+                                    { key: 'high', label: 'high' },
+                                    { key: 'xhigh', label: 'xhigh' },
+                                ].map(opt => (
+                                    <button key={opt.key} style={{ padding: '5px 14px', border: (data.reasoningEffort || 'medium') === opt.key ? '2px solid var(--accent)' : '1px solid var(--border-light)', borderRadius: 'var(--radius-sm)', background: (data.reasoningEffort || 'medium') === opt.key ? 'var(--accent-light)' : 'var(--bg-primary)', cursor: 'pointer', fontSize: 12, fontWeight: (data.reasoningEffort || 'medium') === opt.key ? 600 : 400, color: (data.reasoningEffort || 'medium') === opt.key ? 'var(--accent)' : 'var(--text-primary)', transition: 'all 0.15s' }} onClick={() => update('reasoningEffort', opt.key)}>{opt.label}</button>
+                                ))}
+                            </div>
+                            <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>控制模型推理深度，默认 Medium，XHigh 质量最高但更慢</div>
                         </div>
                     )}
                 </div>
-            ) : (
-                <div style={{ marginBottom: 14 }}>
-                    <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', marginBottom: 5 }}>
-                        {t('apiConfig.modelName')}
-                        {data.apiKey && data.baseUrl && (
-                            <button style={{ marginLeft: 8, fontSize: 11, color: 'var(--accent)', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }} onClick={handleFetchModels} disabled={fetchedModels === 'loading'}>
-                                {fetchedModels === 'loading' ? t('apiConfig.fetching') : t('apiConfig.fetchModels')}
-                            </button>
-                        )}
-                    </label>
-                    <input className="modal-input" style={{ marginBottom: 0 }} value={data.model || ''} onChange={e => update('model', e.target.value)} placeholder="例如：gpt-4o-mini" />
-                    {Array.isArray(fetchedModels) && fetchedModels.length > 0 && (
-                        <>
-                            <div style={{ fontSize: 11, color: 'var(--text-muted)', margin: '6px 0 4px' }}>{t('apiConfig.fetchedCountClick').replace('{count}', fetchedModels.length)}</div>
-                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-                                {fetchedModels.map(m => (
-                                    <button key={m.id} style={{ padding: '4px 10px', border: data.model === m.id ? '2px solid var(--accent)' : '1px solid var(--border-light)', borderRadius: 'var(--radius-sm)', background: data.model === m.id ? 'var(--accent-light)' : 'var(--bg-primary)', cursor: 'pointer', fontSize: 11, color: data.model === m.id ? 'var(--accent)' : 'var(--text-primary)', fontFamily: 'monospace' }} onClick={() => update('model', m.id)}>{m.id}</button>
-                                ))}
-                            </div>
-                        </>
-                    )}
-                </div>
-            )}
+            </div>
 
             {/* 高级模型参数 */}
             <div style={{ marginTop: 24, marginBottom: 14, paddingTop: 16, borderTop: '1px solid var(--border-light)' }}>
@@ -1341,90 +1405,43 @@ function ApiConfigForm({ data, onChange }) {
                             {t('apiConfig.temperature')}
                         </label>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                            <input
-                                type="range" min="0" max="2" step="0.05"
-                                value={data.temperature ?? 1}
-                                onChange={e => update('temperature', parseFloat(e.target.value))}
-                                style={{ flex: 1, accentColor: 'var(--accent)' }}
-                            />
-                            <input
-                                type="number" min="0" max="2" step="0.05"
-                                className="modal-input"
-                                style={{ width: 72, margin: 0, padding: '5px 8px', fontSize: 13, textAlign: 'center' }}
-                                value={data.temperature ?? 1}
-                                onChange={e => update('temperature', parseFloat(e.target.value) || 0)}
-                            />
+                            <input type="range" min="0" max="2" step="0.05" value={data.temperature ?? 1} onChange={e => update('temperature', parseFloat(e.target.value))} style={{ flex: 1, accentColor: 'var(--accent)' }} />
+                            <input type="number" min="0" max="2" step="0.05" className="modal-input" style={{ width: 72, margin: 0, padding: '5px 8px', fontSize: 13, textAlign: 'center' }} value={data.temperature ?? 1} onChange={e => update('temperature', parseFloat(e.target.value) || 0)} />
                         </div>
                         <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>{t('apiConfig.temperatureDesc')}</div>
                     </div>
 
                     {/* Top P */}
                     <div style={{ marginBottom: 14 }}>
-                        <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', marginBottom: 5 }}>
-                            {t('apiConfig.topP')}
-                        </label>
+                        <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', marginBottom: 5 }}>{t('apiConfig.topP')}</label>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                            <input
-                                type="range" min="0" max="1" step="0.05"
-                                value={data.topP ?? 0.95}
-                                onChange={e => update('topP', parseFloat(e.target.value))}
-                                style={{ flex: 1, accentColor: 'var(--accent)' }}
-                            />
-                            <input
-                                type="number" min="0" max="1" step="0.05"
-                                className="modal-input"
-                                style={{ width: 72, margin: 0, padding: '5px 8px', fontSize: 13, textAlign: 'center' }}
-                                value={data.topP ?? 0.95}
-                                onChange={e => update('topP', parseFloat(e.target.value) || 0)}
-                            />
+                            <input type="range" min="0" max="1" step="0.05" value={data.topP ?? 0.95} onChange={e => update('topP', parseFloat(e.target.value))} style={{ flex: 1, accentColor: 'var(--accent)' }} />
+                            <input type="number" min="0" max="1" step="0.05" className="modal-input" style={{ width: 72, margin: 0, padding: '5px 8px', fontSize: 13, textAlign: 'center' }} value={data.topP ?? 0.95} onChange={e => update('topP', parseFloat(e.target.value) || 0)} />
                         </div>
                         <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>{t('apiConfig.topPDesc')}</div>
                     </div>
 
                     {/* 最大上下文长度 */}
                     <div style={{ marginBottom: 14 }}>
-                        <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', marginBottom: 5 }}>
-                            {t('apiConfig.maxContextLength')}
-                        </label>
-                        <input
-                            type="number" min="1024" step="1024"
-                            className="modal-input"
-                            style={{ margin: 0, width: 160, padding: '5px 8px', fontSize: 13 }}
-                            value={data.maxContextLength ?? 200000}
-                            onChange={e => update('maxContextLength', parseInt(e.target.value) || 4096)}
-                        />
+                        <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', marginBottom: 5 }}>{t('apiConfig.maxContextLength')}</label>
+                        <input type="number" min="1024" step="1024" className="modal-input" style={{ margin: 0, width: 160, padding: '5px 8px', fontSize: 13 }} value={data.maxContextLength ?? 200000} onChange={e => update('maxContextLength', parseInt(e.target.value) || 4096)} />
                         <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>{t('apiConfig.maxContextLengthDesc')}</div>
                     </div>
 
-                    {/* 最大输出 Token — Responses API 不适用 */}
+                    {/* 最大输出 Token */}
                     {data.provider !== 'openai-responses' && (
                         <div style={{ marginBottom: 14 }}>
-                            <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', marginBottom: 5 }}>
-                                {t('apiConfig.maxOutputTokens')}
-                            </label>
-                            <input
-                                type="number" min="256" step="256"
-                                className="modal-input"
-                                style={{ margin: 0, width: 160, padding: '5px 8px', fontSize: 13 }}
-                                value={data.maxOutputTokens ?? 65536}
-                                onChange={e => update('maxOutputTokens', parseInt(e.target.value) || 4096)}
-                            />
+                            <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', marginBottom: 5 }}>{t('apiConfig.maxOutputTokens')}</label>
+                            <input type="number" min="256" step="256" className="modal-input" style={{ margin: 0, width: 160, padding: '5px 8px', fontSize: 13 }} value={data.maxOutputTokens ?? 65536} onChange={e => update('maxOutputTokens', parseInt(e.target.value) || 4096)} />
                             <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>{t('apiConfig.maxOutputTokensDesc')}</div>
                         </div>
                     )}
 
-                    {/* 思考层级 — Responses API 有自己的内置思考层级 */}
+                    {/* 思考层级 */}
                     {data.provider !== 'openai-responses' && (
-                        <div style={{ marginBottom: 0 }}>
-                            <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', marginBottom: 5 }}>
-                                {t('apiConfig.reasoningEffort')}
-                            </label>
-                            <select
-                                className="modal-input"
-                                style={{ margin: 0, width: 160, padding: '5px 8px', fontSize: 13 }}
-                                value={data.reasoningEffort || 'auto'}
-                                onChange={e => update('reasoningEffort', e.target.value)}
-                            >
+                        <div style={{ marginBottom: 14 }}>
+                            <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', marginBottom: 5 }}>{t('apiConfig.reasoningEffort')}</label>
+                            <select className="modal-input" style={{ margin: 0, width: 160, padding: '5px 8px', fontSize: 13 }} value={data.reasoningEffort || 'auto'} onChange={e => update('reasoningEffort', e.target.value)}>
                                 <option value="auto">{t('apiConfig.reasoningAuto')}</option>
                                 <option value="low">Low</option>
                                 <option value="medium">Medium</option>
@@ -1439,17 +1456,10 @@ function ApiConfigForm({ data, onChange }) {
             {/* 独立 Embedding 配置 */}
             <div style={{ marginTop: 24, marginBottom: 14, paddingTop: 16, borderTop: '1px solid var(--border-light)' }}>
                 <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: 13, fontWeight: 500, color: 'var(--text-primary)' }}>
-                    <input
-                        type="checkbox"
-                        checked={data.useCustomEmbed || false}
-                        onChange={e => update('useCustomEmbed', e.target.checked)}
-                        style={{ margin: 0 }}
-                    />
+                    <input type="checkbox" checked={data.useCustomEmbed || false} onChange={e => update('useCustomEmbed', e.target.checked)} style={{ margin: 0 }} />
                     {t('apiConfig.embedTitle')}
                 </label>
-                <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4, paddingLeft: 22 }}>
-                    {t('apiConfig.embedDesc')}
-                </div>
+                <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4, paddingLeft: 22 }}>{t('apiConfig.embedDesc')}</div>
             </div>
 
             {data.useCustomEmbed && (
@@ -1457,7 +1467,7 @@ function ApiConfigForm({ data, onChange }) {
                     <div style={{ marginBottom: 14 }}>
                         <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', marginBottom: 8 }}>{t('apiConfig.embedProvider')}</label>
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 6 }}>
-                            {PROVIDERS.filter(p => !['deepseek', 'moonshot', 'siliconflow', 'openai'].includes(p.key)).map(p => (
+                            {PROVIDERS.filter(p => !['deepseek', 'moonshot', 'siliconflow', 'openai', 'openai-responses', 'openrouter', 'groq', 'mistral', 'cohere', 'together', 'perplexity', 'xai', 'cerebras', 'github', 'stepfun', 'volcengine', 'minimax', 'yi', 'baidu'].includes(p.key)).map(p => (
                                 <button key={p.key} style={{ padding: '8px 12px', border: data.embedProvider === p.key ? '2px solid var(--accent)' : '1px solid var(--border-light)', borderRadius: 'var(--radius-md)', background: data.embedProvider === p.key ? 'var(--accent-light)' : 'var(--bg-primary)', cursor: 'pointer', fontSize: 12, fontWeight: data.embedProvider === p.key ? 600 : 400, color: data.embedProvider === p.key ? 'var(--accent)' : 'var(--text-primary)', transition: 'all 0.15s' }} onClick={() => onChange({ ...data, embedProvider: p.key, embedBaseUrl: p.key === 'custom' ? '' : (p.baseUrl || data.embedBaseUrl), embedModel: p.key === 'custom' ? '' : (p.key === 'zhipu' ? 'embedding-3' : 'text-embedding-v3-small') })}>{p.label}</button>
                             ))}
                         </div>
@@ -1484,18 +1494,15 @@ function ApiConfigForm({ data, onChange }) {
                                 </div>
                             </>
                         )}
+                        {Array.isArray(fetchedEmbedModels) && fetchedEmbedModels.length === 0 && (
+                            <div style={{ fontSize: 11, color: 'var(--text-muted)', margin: '6px 0 4px' }}>未找到嵌入模型，可手动输入模型名（如 embedding-3）</div>
+                        )}
                     </div>
 
-                    {/* 重建向量按钮 */}
+                    {/* 重建向量 */}
                     <div style={{ marginTop: 8 }}>
-                        <button
-                            style={{ padding: '8px 16px', border: '1px solid var(--accent)', borderRadius: 'var(--radius-md)', background: 'var(--bg-primary)', cursor: rebuildStatus && !rebuildStatus.finished ? 'wait' : 'pointer', fontSize: 12, color: 'var(--accent)', fontWeight: 500, opacity: rebuildStatus && !rebuildStatus.finished ? 0.7 : 1 }}
-                            onClick={handleRebuildEmbeddings}
-                            disabled={rebuildStatus && !rebuildStatus.finished && !rebuildStatus.error}
-                        >
-                            {rebuildStatus && !rebuildStatus.finished && !rebuildStatus.error
-                                ? `向量化中... ${rebuildStatus.done}/${rebuildStatus.total}`
-                                : '🔄 重建所有设定向量'}
+                        <button style={{ padding: '8px 16px', border: '1px solid var(--accent)', borderRadius: 'var(--radius-md)', background: 'var(--bg-primary)', cursor: rebuildStatus && !rebuildStatus.finished ? 'wait' : 'pointer', fontSize: 12, color: 'var(--accent)', fontWeight: 500, opacity: rebuildStatus && !rebuildStatus.finished ? 0.7 : 1 }} onClick={handleRebuildEmbeddings} disabled={rebuildStatus && !rebuildStatus.finished && !rebuildStatus.error}>
+                            {rebuildStatus && !rebuildStatus.finished && !rebuildStatus.error ? `向量化中... ${rebuildStatus.done}/${rebuildStatus.total}` : '🔄 重建所有设定向量'}
                         </button>
                         {rebuildStatus?.finished && (
                             <span style={{ marginLeft: 8, fontSize: 11, color: rebuildStatus.failed > 0 ? 'var(--warning)' : 'var(--success)' }}>
@@ -1507,20 +1514,6 @@ function ApiConfigForm({ data, onChange }) {
                         )}
                         <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>首次开启或更换嵌入模型后，需要重建向量才能使用 RAG 智能检索</div>
                     </div>
-                </div>
-            )}
-
-            {/* 测试连接 */}
-            {data.apiKey && (
-                <div style={{ marginBottom: 14 }}>
-                    <button style={{ padding: '8px 16px', border: '1px solid var(--accent)', borderRadius: 'var(--radius-md)', background: 'var(--bg-primary)', cursor: testStatus === 'loading' ? 'wait' : 'pointer', fontSize: 13, color: 'var(--accent)', fontWeight: 500, transition: 'all 0.15s', opacity: testStatus === 'loading' ? 0.7 : 1 }} onClick={handleTestConnection} disabled={testStatus === 'loading'}>
-                        {testStatus === 'loading' ? t('apiConfig.testLoading') : t('apiConfig.testBtn')}
-                    </button>
-                    {testStatus && testStatus !== 'loading' && (
-                        <div style={{ marginTop: 8, padding: '8px 12px', borderRadius: 'var(--radius-sm)', fontSize: 12, lineHeight: 1.6, background: testStatus.success ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)', color: testStatus.success ? 'var(--success)' : 'var(--error)', border: `1px solid ${testStatus.success ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)'}` }}>
-                            {testStatus.success ? <>{testStatus.message}<br />{testStatus.reply && <span>{t('apiConfig.testReply')}{testStatus.reply}</span>}</> : <>❌ {testStatus.error}</>}
-                        </div>
-                    )}
                 </div>
             )}
 
@@ -1548,8 +1541,6 @@ function ApiConfigForm({ data, onChange }) {
         </div>
     );
 }
-
-// ==================== 表单组件 ====================
 
 function FieldInput({ label, value, onChange, placeholder, multiline, rows, secret }) {
     const [showSecret, setShowSecret] = useState(false);
