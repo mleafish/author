@@ -74,6 +74,34 @@ async function serverDel(key) {
     if (!res.ok) throw new Error(`Server DELETE failed: ${res.status}`);
 }
 
+const _serverDebounceTimers = new Map();
+const _serverPendingWrites = new Map();
+
+async function debouncedServerSet(key, value) {
+    // 放入待写入队列
+    _serverPendingWrites.set(key, value);
+    
+    // 如果已经有正在倒计时的定时器，清除它
+    if (_serverDebounceTimers.has(key)) {
+        clearTimeout(_serverDebounceTimers.get(key));
+    }
+    
+    // 设置新的 2秒 去抖定时器
+    const timer = setTimeout(async () => {
+        const valToSet = _serverPendingWrites.get(key);
+        _serverPendingWrites.delete(key);
+        _serverDebounceTimers.delete(key);
+        
+        try {
+            await serverSet(key, valToSet);
+        } catch (err) {
+            console.warn('[persist] Server write failed, data saved in browser only:', err.message);
+        }
+    }, 2000);
+    
+    _serverDebounceTimers.set(key, timer);
+}
+
 // ==================== Firebase 同步 ====================
 
 let _firebaseReady = false;
@@ -154,11 +182,9 @@ export async function persistSet(key, value) {
     // 1. 先写浏览器（立即可用）
     await browserSet(key, value);
 
-    // 2. 异步写服务端（不阻塞 UI）
+    // 2. 异步写服务端（去抖，不阻塞 UI，避免每次按键打满带宽）
     if (await checkServerAvailable()) {
-        serverSet(key, value).catch(err => {
-            console.warn('[persist] Server write failed, data saved in browser only:', err.message);
-        });
+        debouncedServerSet(key, value);
     }
 
     // 3. Firebase 云同步（去抖队列，5分钟批量写入）

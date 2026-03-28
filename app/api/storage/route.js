@@ -8,8 +8,10 @@ import crypto from 'crypto';
 
 const DATA_ROOT = process.env.DATA_DIR || path.join(process.cwd(), 'data');
 
-// 从请求中提取或创建用户ID
 function getUserId(request) {
+    if (process.env.VERCEL) {
+        return null; // 在 Vercel 上强制废弃服务端存储，彻底熔断流量
+    }
     // 优先从 cookie 读取
     const cookies = request.headers.get('cookie') || '';
     const match = cookies.match(/author-uid=([a-zA-Z0-9_-]+)/);
@@ -63,8 +65,10 @@ async function safeReadJson(filePath, maxRetries = 3) {
     }
 }
 
-// GET /api/storage?key=xxx — 读取数据
 export async function GET(request) {
+    if (process.env.VERCEL) {
+        return NextResponse.json({ error: 'Storage API is disabled on Vercel to save bandwidth since FS is Read-Only' }, { status: 403 });
+    }
     try {
         const userId = getUserId(request);
         if (!userId) {
