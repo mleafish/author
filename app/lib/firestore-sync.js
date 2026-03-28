@@ -236,11 +236,38 @@ export async function pullAllFromCloud(localGet, localSet) {
             const cloudData = docSnap.data();
             const localData = await localGet(key);
 
-            // 简单合并策略：云端有数据且本地没有 → 用云端的
-            // 如果都有，以 updatedAt 更新时间为准
-            if (localData === undefined || localData === null) {
+            // 判断本地数据是否实质上为空或仅包含初始默认结构
+            const isLocalEmptyOrDefault = (key, data) => {
+                if (data === undefined || data === null) return true;
+                if (Array.isArray(data)) {
+                    if (data.length === 0) return true;
+                    if (key.startsWith('author-chapters')) {
+                        // 初始项目可能会自动生成“第一卷”和“未命名章节”
+                        // 只要没有任何章节有实际内容，就认为是空状态
+                        const hasContent = data.some(item => 
+                            item.type !== 'volume' && 
+                            ((item.content && item.content.trim() !== '') || (item.wordCount > 0) || (item.title && item.title !== '未命名章节'))
+                        );
+                        return !hasContent;
+                    }
+                    return false;
+                }
+                if (typeof data === 'object') {
+                    if (Object.keys(data).length === 0) return true;
+                }
+                if (typeof data === 'string' && data.trim() === '') return true;
+                return false;
+            };
+
+            // 简单合并策略：如果本地确实没有实质数据，则用云端的覆盖
+            // 解决新设备登录时，由于本地存在默认初始化的空章节/设定导致无法拉取云端数据的问题
+            if (isLocalEmptyOrDefault(key, localData)) {
                 await localSet(key, cloudData.value);
                 merged++;
+            } else if (cloudData.updatedAt) {
+                // 如果本地有数据，且云端带有时间戳，可以比较时间戳（尽力而为的合并）
+                // 目前由于本地数据结构不一（可能没有全局 updatedAt），非空状态下暂不直接强行覆盖
+                // 留待以后如果有基于时间戳的细粒度冲突解决再做扩展
             }
         }
 
@@ -249,6 +276,44 @@ export async function pullAllFromCloud(localGet, localSet) {
     } catch (err) {
         console.warn('[firestore] pull failed:', err.message);
         return 0;
+    }
+}
+
+/**
+ * 强制从云端拉取全部数据，无视本地状态直接覆盖
+ * 用户手动点击“从云端同步”时调用
+ * @param {Function} localSet - 本地写入函数 (key, value) => void或Promise
+ * @returns {Promise<number>} 覆盖的数据条数
+ */
+export async function forcePullFromCloud(localSet) {
+    const user = getCurrentUser();
+    if (!isFirebaseConfigured || !db || !user) return 0;
+
+    notifySyncStatus({ syncing: true, pending: 0 });
+    try {
+        const { collection, getDocs } = await import('firebase/firestore');
+        const colRef = collection(db, 'users', user.uid, COLLECTION_NAME);
+        const snapshot = await getDocs(colRef);
+
+        let pulledCount = 0;
+        for (const docSnap of snapshot.docs) {
+            const key = docSnap.id;
+            const cloudData = docSnap.data();
+            
+            // 无条件覆盖本地
+            if (cloudData && cloudData.value !== undefined) {
+                await localSet(key, cloudData.value);
+                pulledCount++;
+            }
+        }
+        
+        console.log(`[firestore] force pulled ${snapshot.size} items, overwritten ${pulledCount} local items`);
+        notifySyncStatus({ syncing: false, pending: 0, lastSync: Date.now() });
+        return pulledCount;
+    } catch (err) {
+        console.error('[firestore] force pull failed:', err.message);
+        notifySyncStatus({ syncing: false, pending: 0, error: err.message });
+        throw err;
     }
 }
 

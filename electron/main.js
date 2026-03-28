@@ -30,8 +30,8 @@ const fs = require('fs');
     }
 })();
 
-// 日志文件 - 写到应用安装根目录（exe 同级），方便查找
-const logFile = path.join(path.dirname(process.execPath), 'author-debug.log');
+// 日志文件 - 写到操作系统的 UserData 目录（避免 C 盘权限问题被静默拦截）
+const logFile = path.join(app.getPath('userData'), 'author-debug.log');
 function log(msg) {
     const line = `[${new Date().toISOString()}] ${msg}\n`;
     console.log(msg);
@@ -133,6 +133,23 @@ function createWindow() {
         }
         // Electron 有时已经能从 a.download 获取到正确名称，这里做兜底
         log(`[Download] Original filename: ${suggestedName}`);
+    });
+
+    let isForceClosing = false;
+
+    // 拦截关闭事件，询问是否需要同步
+    mainWindow.on('close', (e) => {
+        if (!isForceClosing && mainWindow && !mainWindow.isDestroyed()) {
+            e.preventDefault();
+            mainWindow.webContents.send('confirm-exit-sync');
+        }
+    });
+
+    ipcMain.once('allow-close', () => {
+        isForceClosing = true;
+        if (mainWindow && !mainWindow.isDestroyed()) {
+            mainWindow.close();
+        }
     });
 
     mainWindow.on('closed', () => {

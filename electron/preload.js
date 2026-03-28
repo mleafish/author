@@ -21,4 +21,11 @@ contextBridge.exposeInMainWorld('electronAPI', {
     onUpdateError: (callback) => {
         ipcRenderer.on('update-error', (event, data) => callback(data));
     },
+    // ---- 退出确认 ----
+    onExitSyncRequest: (callback) => {
+        ipcRenderer.on('confirm-exit-sync', () => callback());
+    },
+    allowClose: () => {
+        ipcRenderer.send('allow-close');
+    }
 });

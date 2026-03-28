@@ -79,6 +79,13 @@
 
 > 💡 从源码构建桌面应用：`npm run build && npx electron-builder --win`
 
+### 🐛 常见问题排查 / Debug 日志
+
+如果您在打开软件时遇到持续白屏，或程序无法正常启动，请查看系统为您生成的本地 Debug 日志文件：
+- **Windows 路径**：`C:\Users\<您的用户名>\AppData\Roaming\Author\author-debug.log`
+
+*(按 `Win + R` 键，输入 `%APPDATA%\Author` 回车即可快速打开该文件夹查看日志)*
+
 ---
 
 ## 🚀 快速开始

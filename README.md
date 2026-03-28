@@ -77,6 +77,13 @@ Just install and start writing. All features work out of the box.
 
 > 💡 To build the desktop app from source: `npm run build && npx electron-builder --win`
 
+### 🐛 Troubleshooting / Debug Logs
+
+If you encounter a white screen or the app fails to start, you can check the local debug logs located at:
+- **Windows**: `C:\Users\<YourUsername>\AppData\Roaming\Author\author-debug.log`
+
+*(You can quickly open this folder by pressing `Win + R` and typing `%APPDATA%\Author`)*
+
 ---
 
 ## 🚀 Getting Started

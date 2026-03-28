@@ -280,7 +280,7 @@ export async function initPersistence() {
 export async function syncFromCloud() {
     const sync = await ensureFirebase();
     if (!sync || !isFirebaseSignedIn()) return 0;
-    return await sync.pullAllFromCloud(browserGet, browserSet);
+    return await sync.pullAllFromCloud(persistGet, persistSet);
 }
 
 /**
