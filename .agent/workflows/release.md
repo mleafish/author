@@ -48,29 +48,57 @@ git status --short
    - 任何可疑发现的详细说明
    等待用户确认通过后，才可继续后续步骤。
 
+## 撰写发版文案（非常重要）
+
+**【强制规范】每次推送代码前，都必须全面更新以下两个文件！**
+
+6. **【必须】** 更新或创建 `RELEASE_NOTES.md`，用作 GitHub Release 的详细双语更新日志：
+   - 梳理完整的中、英双语更新日志，内容涵盖**本版本与上一版本之间的所有改动**。
+   - **常规版本升级**：总结新旧两个版本间的核心功能差异。
+   - **紧急修复（版本号不变）**：不可覆盖已有日志！在现有内容基础上**追加**本次修复的简要说明。
+   - 如果丢失了原文件结构，请沿用上一版的排版格式。
+
+7. **【必须】** 更新或创建 `RELEASE_TITLE.txt`，用作 GitHub Release 的精简标题：
+   - 根据上一步写好的详细日志，**提炼出一句话总结**。
+   - **格式规范：必须采用 `中文标题 | 英文标题`（中间用竖线隔开）的结构。**
+   - 示例：`修复了云端断网时的卡顿崩溃 | Fixed stuttering crash in offline cloud modes`
+   - 注意：只写标题正文即可，**切勿带版本号前缀**（例如不要写 `Author vX.Y.Z — ...`，构建脚本会自动拼接版本号）。
+
+> **⚠️ 紧急修复（版本号不变）的特殊流程：** 写完上述两个文件后，跳过下方的"更新版本号"步骤，直接进入"提交与推送"。打 tag 时使用 `git tag -f vX.Y.Z` 强制覆盖旧 tag，推送时使用 `git push origin vX.Y.Z -f`。
+
 ## 更新版本号
 
-4. 更新 `package.json` 中的版本号（替换 `X.Y.Z` 为目标版本）：
+> 如果是不改版本号的紧急修复，跳过此步骤。
+
+8. 更新 `package.json` 中的版本号（替换 `X.Y.Z` 为目标版本）：
 ```bash
 npm version X.Y.Z --no-git-tag-version
 ```
 
 ## 提交与推送
 
-5. 暂存并提交所有改动：
+9. 暂存并提交所有改动（包括文案与版本号）：
 ```bash
 git add -A
 git commit -m "vX.Y.Z: 简要描述本次更新内容"
 ```
 
-6. 打 git tag：
+10. 打 git tag（如果版本号不变则强制覆盖旧 tag）：
 ```bash
+# 新版本号：
 git tag vX.Y.Z
+
+# 或版本号不变的紧急修复（强制覆盖）：
+git tag -f vX.Y.Z
 ```
 
-7. 推送代码和 tag：
+11. 推送代码和 tag（如果版本号不变则强制推送 tag）：
 ```bash
+# 新版本号：
 git push origin main && git push origin vX.Y.Z
+
+# 或版本号不变的紧急修复（强制推送）：
+git push origin main && git push origin vX.Y.Z -f
 ```
 
 ## 自动构建
@@ -84,12 +112,12 @@ git push origin main && git push origin vX.Y.Z
 
 ## 构建完成后
 
-8. 去 [Releases 页面](https://github.com/YuanShiJiLoong/author/releases) 确认：
-   - 安装包文件名版本号正确（如 `Author Setup X.Y.Z.exe`）
-   - Release Notes 格式正确（双语）
-   - 下载链接可用
+12. 去 [Releases 页面](https://github.com/YuanShiJiLoong/author/releases) 确认：
+    - 安装包文件名版本号正确（如 `Author Setup X.Y.Z.exe`）
+    - Release Notes 格式正确（双语）
+    - 下载链接可用
 
-9. （可选）下载 `.exe` 发到 QQ 群，或直接分享 Release 链接
+13. （可选）下载 `.exe` 发到 QQ 群，或直接分享 Release 链接
 
 ## 注意事项
 

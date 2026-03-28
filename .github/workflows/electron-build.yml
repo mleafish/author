@@ -65,8 +65,18 @@ jobs:
           if [ -f "RELEASE_TITLE.txt" ]; then
             TITLE_DESC=$(cat RELEASE_TITLE.txt)
           else
-            TITLE_DESC=$(git log -1 --pretty=format:"%s" | sed 's/^v[0-9\.]*: *//')
+            TITLE_DESC=$(git log -1 --pretty=format:"%s")
           fi
+          
+          # 清理由于多次撰写造成的冗余版号前缀，强制规范格式
+          # 移除连续出现的 "Author v1.2.8 — ", "v1.2.8: ", "Author - " 等前缀
+          export TITLE_DESC
+          TITLE_DESC=$(node -e "
+            let t = process.env.TITLE_DESC || '';
+            t = t.replace(/^(?:\s*(?:Author|v?\d+\.\d+\.\d+)\s*(?:-|—|:|\s)\s*)+/ig, '').trim();
+            console.log(t);
+          ")
+          
           echo "title_desc=$TITLE_DESC" >> $GITHUB_OUTPUT
 
           # 2. 尝试读取预热好的双语详细日记

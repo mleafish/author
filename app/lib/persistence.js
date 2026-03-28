@@ -34,11 +34,14 @@ let _serverAvailable = null; // null = 未检测, true/false = 检测结果
 async function checkServerAvailable() {
     if (_serverAvailable !== null) return _serverAvailable;
     try {
-        const res = await fetch('/api/storage?key=__ping', {
-            method: 'GET',
+        // 先尝试写入 __ping 以检测是否为只读环境（如 Vercel）
+        const res = await fetch('/api/storage', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
+            body: JSON.stringify({ key: '__ping', value: Date.now() }),
         });
-        _serverAvailable = res.ok || res.status === 401; // 401 也说明服务端在运行
+        _serverAvailable = res.ok;
         return _serverAvailable;
     } catch {
         _serverAvailable = false;
@@ -47,31 +50,46 @@ async function checkServerAvailable() {
 }
 
 async function serverGet(key) {
+    if (_serverAvailable === false) throw new Error('Server storage disabled');
     const res = await fetch(`/api/storage?key=${encodeURIComponent(key)}`, {
         method: 'GET',
         credentials: 'include',
     });
-    if (!res.ok) throw new Error(`Server GET failed: ${res.status}`);
+    if (!res.ok) {
+        if (res.status === 500) _serverAvailable = false;
+        throw new Error(`Server GET failed: ${res.status}`);
+    }
     const { data } = await res.json();
     return data;
 }
 
 async function serverSet(key, value) {
+    if (_serverAvailable === false) throw new Error('Server storage disabled');
     const res = await fetch('/api/storage', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({ key, value }),
     });
-    if (!res.ok) throw new Error(`Server POST failed: ${res.status}`);
+    if (!res.ok) {
+        if (res.status === 500 || res.status === 403 || res.status === 404) {
+            _serverAvailable = false;
+            console.warn(`[persist] Server POST returned ${res.status}. Disabling server storage to prevent looping.`);
+        }
+        throw new Error(`Server POST failed: ${res.status}`);
+    }
 }
 
 async function serverDel(key) {
+    if (_serverAvailable === false) throw new Error('Server storage disabled');
     const res = await fetch(`/api/storage?key=${encodeURIComponent(key)}`, {
         method: 'DELETE',
         credentials: 'include',
     });
-    if (!res.ok) throw new Error(`Server DELETE failed: ${res.status}`);
+    if (!res.ok) {
+        if (res.status === 500) _serverAvailable = false;
+        throw new Error(`Server DELETE failed: ${res.status}`);
+    }
 }
 
 // ==================== Firebase 同步 ====================

@@ -1,1 +1,1 @@
-Author v1.2.7 — 物理隔离断网秒开版上线与同步体验升级
+服务端只读环境 500 报错拦截防死循环与构建链发版前缀修缮 | Serverless API Loop Breaker & CI/CD Pipeline Sanitization

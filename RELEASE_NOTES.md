@@ -1,13 +1,12 @@
 ## 📋 本次焕新简报 / Release Overview
 
-在 1.2.7 版本中，为了追求极致的无网环境写作体验和保障本地数据的纯净安全，Author 迎来了极简但至关重要的一次内生进化。
+在本次更新中，我们重点对应用的外部部署环境（特别是如 Vercel 等 Serverless 平台）的兼容性做出了关键修复，同时优化了发版构建的脚本链路，确保版本控制更加严谨。
 
 ### 🇨🇳 中文更新概览
 
-- 🚀 **零延迟！完全卸载外部字体依赖**：全面本地化字体库与配套 CSS 渲染引擎。告别因极弱网或无网状态下造成的拉取云端字体超时、页面严重白屏卡顿问题，在物理隔离环境下也可真正实现「秒开」。
-- 🧰 **内置纯离线 Katex 引擎支持**：系统已内置无差别高级数学公式渲染包，拔网线也能愉快挥洒公式。
-- 🛡️ **底层调试日志持久化修复**：程序底层的 Debug 日志输出目录，现已由安装目录强制规避迁移至本机的用户数据目录（User Data），彻底杜绝因系统写入权限不足带来的“吞日志”幽灵 Bug。
-- 🔄 **云端与本地同步体验再升级**：对版本快照记录及退出程序的覆盖同步逻辑进行了精细化重构打磨，提示拦截弹窗更加智能清晰。
+- 🛡️ **云端只读部署环境 500 熔断机制**：修复了当应用部署在 Vercel 等无写入权限的 Serverless 环境下时，频繁调用 `/api/storage` 导致的不断抛出 `500 Server Error` 错误。系统现在会智能通过 POST 探针感知环境读写权限，并在服务端触发拦截时立刻绕开 API，优雅降级回 IndexedDB 或 Firebase，彻底根绝同步状态死循环。
+- 🔧 **构建链标题去重规范化**：修复了在触发 GitHub Actions 自动发版构建期间，系统无法识别手写包含重叠版本号的自定义前缀，从而导致像 `Author v1.2.8 — Author v1.2.7...` 等“俄罗斯套娃”式废话标题。现在底层已加入 Node.js 正则防呆拦截代码。
+- 📦 **强化发版审计指南**：全站更新工作流规范说明。针对每一次 GitHub Tag 发版新增强制手撸更新日志节点，减少因复制粘贴疏忽产生的文档残留。
 
 📦 点击下方 `.exe` 直链下载，无需繁琐配置，双击运行即可开启您的零干涉心流创作。
 
@@ -15,11 +14,10 @@
 
 ### 🇺🇸 English Release Notes
 
-In version 1.2.7, Author takes a disciplined step entirely towards establishing an extreme offline-writing ecosystem, ensuring zero data delays.
+In this update, we made key reliability fixes targeting external deployment environments (specifically Serverless platforms like Vercel with strict filesystem permissions) and refined the internal CI/CD release logging mechanism to curb layout oversights.
 
-- 🚀 **Zero-latency Startups:** External font CDNs and CSS scripts have been entirely eradicated from the application layout. By utilizing localized typography, the editor will now launch instantly without encountering prolonged white-screen loading hiccups caused by restrictive offline environments.
-- 🧰 **Embedded Offline Katex Rendering:** Complete integration of offline Katex modules allows for complex mathematical formula formatting without making a single network request.
-- 🛡️ **Debug Logging Persistence Fixed:** Rectified an invisible bug causing local debugging logs to vanish into thin air due to strict Windows Program Files write permissions, by smoothly relocating log emissions directly to the User Data configuration directory.
-- 🔄 **Enhanced Cloud Sync UI/UX:** Polished components handling synchronization interceptions and local vs. cloud file diff resolutions, providing a smoother conflict handling experience.
+- 🛡️ **Serverless Environment API Loop Circuit Breaker:** Resolved a critical recursive synchronization bug where hosting environments without explicit write capabilities (such as Vercel) caused the front-end to spam the `/api/storage` endpoint with continuously failing `500 Server Error` signals. The system now utilizes a smart POST-ping mechanism capable of diagnosing read-only environments locally, bypassing storage APIs immediately, and gracefully falling back to IndexedDB or Firebase without stalling.
+- 🔧 **Automated Release Notes Title Normalization:** Addressed an annoying GitHub Action automation quirk causing redundant release title injections containing stacked version prefixes (e.g., `Author v1.2.8 — Author v1.2.7...`). The deployment script now leverages rigorous regex-based sanitization in Node.js to enforce single unified release headers.
+- 📦 **Strengthened Publishing Guidelines:** Heavily revamped internal workspace release flow. The release workflow is now fortified with explicit checkpoints enforcing manually-drafted update briefs per version to combat un-updated residual files persisting into final builds.
 
 📦 Simply grab the `.exe` installer right below and run it directly. Cloud sync engine is already packed nicely inside.
