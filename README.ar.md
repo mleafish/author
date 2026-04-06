@@ -1,5 +1,7 @@
 [English](README.md) | [简体中文](README.zh.md) | [Русский](README.ru.md) | **الفلسطينية (العربية)** 🇵🇸
 
+> **هذا المشروع مبني على [YuanShiJiLoong/author](https://github.com/YuanShiJiLoong/author). شكراً للمؤلف الأصلي.**
+
 # ✍️ Author — منصة الكتابة الإبداعية المدعومة بالذكاء الاصطناعي
 
 > استوديو كتابة مدعوم بالذكاء الاصطناعي للروائيين وكتاب السيناريو ورواة القصص.
@@ -71,7 +73,7 @@
 
 **لا حاجة لتثبيت Node.js!** يمكنك تنزيل مثبت البرنامج المجمع مسبقًا:
 
-- 📥 [تنزيل منصة Author لنظام الويندوز](https://github.com/YuanShiJiLoong/author/releases/latest)
+- 📥 [تنزيل منصة Author لنظام الويندوز](https://github.com/mleafish/author/releases/latest)
 
 فقط قم بتثبيته وابدأ في الكتابة على الفور. تعمل كل الميزات الإضافية مباشرة.
 
@@ -88,7 +90,7 @@
 
 ## 🚀 دليل البدء السريع
 
-> 💡 **مُوصى به بشدة**: ننصح في الغالبية العظمى من المستخدمين الذين يريدون الكتابة اليومية فقط والمزامنة مع أجهزتهم عبر السحابة، [عبر تحميل وتثبيت برنامج الويندوز الجاهز مباشرةً](https://github.com/YuanShiJiLoong/author/releases/latest). أما التثبيت باستخدام مصدر الكود (Source Code) أو Vercel فهو موجه للمستخدمين المتقدمين الذين يودون إضافة **تطويرات جانبية (Secondary development)** والتعديل الخاص، أو تكوين قاعدة بيانات Firebase بأنفسهم.
+> 💡 **مُوصى به بشدة**: ننصح في الغالبية العظمى من المستخدمين الذين يريدون الكتابة اليومية فقط والمزامنة مع أجهزتهم عبر السحابة، [عبر تحميل وتثبيت برنامج الويندوز الجاهز مباشرةً](https://github.com/mleafish/author/releases/latest). أما التثبيت باستخدام مصدر الكود (Source Code) أو Vercel فهو موجه للمستخدمين المتقدمين الذين يودون إضافة **تطويرات جانبية (Secondary development)** والتعديل الخاص، أو تكوين قاعدة بيانات Firebase بأنفسهم.
 
 ### المتطلبات الأساسية
 - **Node.js** إصدار 18+
@@ -98,7 +100,7 @@
 
 ```bash
 # استنساخ المستودع
-git clone https://github.com/YuanShiJiLoong/author.git
+git clone https://github.com/mleafish/author.git
 # أو استخدام مرآة Gitee (أسرع في الصين)
 # git clone https://gitee.com/yuanshijilong/author.git
 cd author
@@ -134,7 +136,7 @@ npm start
 
 > 💡 **⚠️ ملاحظة:** النسخة المنشورة عبر Vercel **لا تدعم ميزات المزامنة السحابية** افتراضيًا (يجب أن تقوم بتكوين قاعدة بيانات Firebase اليدوية الخاصة بك بشكل منفصل). إذا كنت تريد فقط المزامنة عبر الأجهزة، فيرجى **تنزيل تطبيق سطح المكتب مباشرةً** لتجنب العناء.
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/YuanShiJiLoong/author)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/mleafish/author)
 
 ### ☁️ إعداد المزامنة السحابية (التشغيل الذاتي Self-Deploy)
 
@@ -187,7 +189,7 @@ NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
 
 ### مستخدمو تطبيق ويندوز لسطح المكتب (Desktop Client Users)
 
-قم بتحميل أحدث إصدار لمثبت التحديث من خلال صفحة [الإصدارات (Releases)](https://github.com/YuanShiJiLoong/author/releases/latest) وقم بتنصيبه فوق النسخة الحالية المتواجدة لديك. بياناتك ومسوداتك القديمة محتفظ بها داخلياً في ملف مسار المتصفح (Browser/Electron profile) ولن تتعرض للضياع.
+قم بتحميل أحدث إصدار لمثبت التحديث من خلال صفحة [الإصدارات (Releases)](https://github.com/mleafish/author/releases/latest) وقم بتنصيبه فوق النسخة الحالية المتواجدة لديك. بياناتك ومسوداتك القديمة محتفظ بها داخلياً في ملف مسار المتصفح (Browser/Electron profile) ولن تتعرض للضياع.
 
 ### مستخدمو أصل الكود (Self-Deployed Users)
 

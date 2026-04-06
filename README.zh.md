@@ -1,5 +1,7 @@
 [English](README.md) | **简体中文** | [Русский](README.ru.md) | [الفلسطينية (العربية)](README.ar.md)
 
+> **本项目基于 [YuanShiJiLoong/author](https://github.com/YuanShiJiLoong/author) 修改而来，感谢原作者。**
+
 # ✍️ Author — AI-Powered Creative Writing Platform
 
 > AI 驱动的网文创作平台 | AI-Powered Web Novel Writing Studio
@@ -72,7 +74,7 @@
 
 **无需安装 Node.js！** 直接下载安装包：
 
-- 📥 [下载 Author 安装包（Windows）](https://github.com/YuanShiJiLoong/author/releases/latest)
+- 📥 [下载 Author 安装包（Windows）](https://github.com/mleafish/author/releases/latest)
 - 💬 无法访问 GitHub？[加入 QQ 交流群：1087016949](https://qm.qq.com/q/wjRDkotw0E)，群文件中下载
 
 安装即用，所有功能开箱即得。
@@ -90,7 +92,7 @@
 
 ## 🚀 快速开始
 
-> 💡 **强烈建议**：对于只需满足日常写作和云端多设备同步需求的大多数用户，请[直接下载安装客户端](https://github.com/YuanShiJiLoong/author/releases/latest)使用。源码部署或 Vercel 部署仅建议需要进行**二次开发**，或愿意自行配置 Firebase 数据库的高级用户使用。
+> 💡 **强烈建议**：对于只需满足日常写作和云端多设备同步需求的大多数用户，请[直接下载安装客户端](https://github.com/mleafish/author/releases/latest)使用。源码部署或 Vercel 部署仅建议需要进行**二次开发**，或愿意自行配置 Firebase 数据库的高级用户使用。
 
 ### 环境要求
 - **Node.js** 18+
@@ -100,7 +102,7 @@
 
 ```bash
 # 克隆仓库
-git clone https://github.com/YuanShiJiLoong/author.git
+git clone https://github.com/mleafish/author.git
 # 国内用户推荐使用 Gitee 镜像（更快）
 # git clone https://gitee.com/yuanshijilong/author.git
 cd author
@@ -136,7 +138,7 @@ npm start
 
 > 💡 **⚠️ 注意：** 通过 Vercel 部署的版本默认**没有**云同步等功能（需要单独配置你自己的 Firebase 数据库）。如果你只想要多设备同步，请**直接下载客户端**，无需折腾。
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/YuanShiJiLoong/author)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/mleafish/author)
 
 ### ☁️ 云同步配置（自部署用户）
 
@@ -189,7 +191,7 @@ NEXT_PUBLIC_FIREBASE_APP_ID=你的app_id
 
 ### 桌面客户端用户
 
-前往 [Releases](https://github.com/YuanShiJiLoong/author/releases/latest) 页面下载最新版本安装包，覆盖安装即可。你的数据存储在浏览器/Electron 用户配置中，不会丢失。
+前往 [Releases](https://github.com/mleafish/author/releases/latest) 页面下载最新版本安装包，覆盖安装即可。你的数据存储在浏览器/Electron 用户配置中，不会丢失。
 
 > 💬 无法访问 GitHub？[加入 QQ 交流群：1087016949](https://qm.qq.com/q/wjRDkotw0E)，群文件中下载最新版本。
 
@@ -553,7 +555,7 @@ Author 支持从多种格式导入设定集：**JSON / Markdown / TXT / DOCX / P
 ## 💬 社区交流
 
 - [QQ 交流群：1087016949（Author交流群）](https://qm.qq.com/q/wjRDkotw0E)
-- [GitHub Issues](https://github.com/YuanShiJiLoong/author/issues) — 问题反馈与功能建议
+- [GitHub Issues](https://github.com/mleafish/author/issues) — 问题反馈与功能建议
 
 ---
 

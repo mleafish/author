@@ -1,5 +1,7 @@
 [English](README.md) | [简体中文](README.zh.md) | **Русский** | [الفلسطينية (العربية)](README.ar.md)
 
+> **Этот проект основан на [YuanShiJiLoong/author](https://github.com/YuanShiJiLoong/author). Благодарим оригинального автора.**
+
 # ✍️ Author — Платформа для писателей на базе ИИ
 
 > Писательская студия на базе ИИ для романистов, сценаристов и авторов историй.
@@ -71,7 +73,7 @@
 
 **Node.js не требуется!** Скачайте предварительно собранный установщик:
 
-- 📥 [Скачать Author Setup (Windows)](https://github.com/YuanShiJiLoong/author/releases/latest)
+- 📥 [Скачать Author Setup (Windows)](https://github.com/mleafish/author/releases/latest)
 
 Просто установите и начните писать. Все функции работают "из коробки".
 
@@ -88,7 +90,7 @@
 
 ## 🚀 Быстрый старт
 
-> 💡 **Настоятельно рекомендуется**: Большинству пользователей, которым нужно только ежедневное письмо и многоплатформенная облачная синхронизация, пожалуйста, [напрямую скачайте и установите клиент](https://github.com/YuanShiJiLoong/author/releases/latest). Развертывание исходного кода или Vercel рекомендуется только для продвинутых пользователей, которым требуется **вторичная разработка** или которые готовы самостоятельно настроить базу данных Firebase.
+> 💡 **Настоятельно рекомендуется**: Большинству пользователей, которым нужно только ежедневное письмо и многоплатформенная облачная синхронизация, пожалуйста, [напрямую скачайте и установите клиент](https://github.com/mleafish/author/releases/latest). Развертывание исходного кода или Vercel рекомендуется только для продвинутых пользователей, которым требуется **вторичная разработка** или которые готовы самостоятельно настроить базу данных Firebase.
 
 ### Требования
 - **Node.js** 18+
@@ -98,7 +100,7 @@
 
 ```bash
 # Клонируйте репозиторий
-git clone https://github.com/YuanShiJiLoong/author.git
+git clone https://github.com/mleafish/author.git
 # Или используйте зеркало Gitee (в Китае быстрее)
 # git clone https://gitee.com/yuanshijilong/author.git
 cd author
@@ -134,7 +136,7 @@ npm start
 
 > 💡 **⚠️ Примечание:** Версия, развернутая через Vercel, по умолчанию **не** имеет функций облачной синхронизации (вам необходимо отдельно настроить собственную ручную базу данных Firebase). Если вам нужна синхронизация на нескольких устройствах, пожалуйста, **скачайте клиент напрямую**, чтобы избежать проблем.
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/YuanShiJiLoong/author)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/mleafish/author)
 
 ### ☁️ Настройка облачной синхронизации (Self-Deploy)
 
@@ -187,7 +189,7 @@ NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
 
 ### Пользователи десктопного клиента
 
-Загрузите последнюю версию установщика со страницы [Releases](https://github.com/YuanShiJiLoong/author/releases/latest) и установите поверх вашей текущей версии. Ваши данные хранятся в профиле браузера/Electron и не будут потеряны.
+Загрузите последнюю версию установщика со страницы [Releases](https://github.com/mleafish/author/releases/latest) и установите поверх вашей текущей версии. Ваши данные хранятся в профиле браузера/Electron и не будут потеряны.
 
 ### Обычные пользователи (Исходный код)
 

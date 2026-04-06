@@ -1,5 +1,7 @@
 **English** | [简体中文](README.zh.md) | [Русский](README.ru.md) | [الفلسطينية (العربية)](README.ar.md)
 
+> **This project is forked and modified from [YuanShiJiLoong/author](https://github.com/YuanShiJiLoong/author). Full credit to the original author.**
+
 # ✍️ Author — AI-Powered Creative Writing Platform
 
 > An AI-powered writing studio for novelists, screenwriters, and storytellers.
@@ -71,7 +73,7 @@ I watched the versatility of these models being gutted. I don't want us to live 
 
 **No Node.js required!** Download the pre-built installer:
 
-- 📥 [Download Author Setup (Windows)](https://github.com/YuanShiJiLoong/author/releases/latest)
+- 📥 [Download Author Setup (Windows)](https://github.com/mleafish/author/releases/latest)
 
 Just install and start writing. All features work out of the box.
 
@@ -88,7 +90,7 @@ If you encounter a white screen or the app fails to start, you can check the loc
 
 ## 🚀 Getting Started
 
-> 💡 **Highly Recommended**: For most users who only need daily writing and cloud multi-device synchronization, please [directly download and install the client](https://github.com/YuanShiJiLoong/author/releases/latest). Source code deployment or Vercel deployment is only recommended for advanced users who need **secondary development** or are willing to configure a Firebase database themselves.
+> 💡 **Highly Recommended**: For most users who only need daily writing and cloud multi-device synchronization, please [directly download and install the client](https://github.com/mleafish/author/releases/latest). Source code deployment or Vercel deployment is only recommended for advanced users who need **secondary development** or are willing to configure a Firebase database themselves.
 
 ### Requirements
 - **Node.js** 18+
@@ -98,7 +100,7 @@ If you encounter a white screen or the app fails to start, you can check the loc
 
 ```bash
 # Clone the repository
-git clone https://github.com/YuanShiJiLoong/author.git
+git clone https://github.com/mleafish/author.git
 # Or use Gitee mirror (faster in China)
 # git clone https://gitee.com/yuanshijilong/author.git
 cd author
@@ -134,7 +136,7 @@ npm start
 
 > 💡 **⚠️ Note:** The version deployed via Vercel does **not** have cloud sync features by default (you need to configure your own manual Firebase database separately). If you just want multi-device synchronization, please **download the client directly** to avoid the hassle.
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/YuanShiJiLoong/author)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/mleafish/author)
 
 ### ☁️ Cloud Sync Setup (Self-Deploy)
 
@@ -187,7 +189,7 @@ Add the same variables in **Vercel Dashboard → Project Settings → Environmen
 
 ### Desktop Client Users
 
-Download the latest installer from the [Releases](https://github.com/YuanShiJiLoong/author/releases/latest) page and install it over your current version. Your data is stored in the browser/Electron profile and will not be lost.
+Download the latest installer from the [Releases](https://github.com/mleafish/author/releases/latest) page and install it over your current version. Your data is stored in the browser/Electron profile and will not be lost.
 
 ### Self-Deployed Users (Source)
 
