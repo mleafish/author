@@ -1,8 +1,10 @@
 
 > **本项目基于 [YuanShiJiLoong/author](https://github.com/YuanShiJiLoong/author) 修改而来，感谢原作者。**
 
-意外发现了这个ai写作工具，用下来挺好用，但还有些不喜欢的地方，我不会编程，但我会写作，所以这个项目全部由claude修改，我只想加入我需要的功能，然后分享出来，随缘更新！
-以下是原作者内容：
+> 意外发现了这个ai写作工具，用下来挺好用，但还有些不喜欢的地方，我不会编程，但我会写作，所以这个项目全部由claude修改，我只想加入我需要的功能，然后分享出来，随缘更新！
+
+
+> **以下是原作者内容：**
 
 # ✍️ Author — AI-Powered Creative Writing Platform
 
