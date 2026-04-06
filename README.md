@@ -1,155 +1,156 @@
-**English** | [简体中文](README.zh.md) | [Русский](README.ru.md) | [الفلسطينية (العربية)](README.ar.md)
 
-> **This project is forked and modified from [YuanShiJiLoong/author](https://github.com/YuanShiJiLoong/author). Full credit to the original author.**
+> **本项目基于 [YuanShiJiLoong/author](https://github.com/YuanShiJiLoong/author) 修改而来，感谢原作者。**
 
 # ✍️ Author — AI-Powered Creative Writing Platform
 
-> An AI-powered writing studio for novelists, screenwriters, and storytellers.
+> AI 驱动的网文创作平台 | AI-Powered Web Novel Writing Studio
 
-**Author** is an AI-assisted creative writing tool designed for fiction writers. It brings together a professional rich text editor, an intelligent AI writing assistant, and a complete worldbuilding management system — all in one seamless experience.
+**Author** 是一款面向小说作者的 AI 辅助创作工具。它将专业的富文本编辑器、智能 AI 写作助手和完整的世界观管理系统整合在一起，为创作者提供一站式写作体验。
 
-🌐 **Live Demo**: [author-delta.vercel.app](https://author-delta.vercel.app)
+🌐 **在线体验**：[author-delta.vercel.app](https://author-delta.vercel.app)
 
-📦 **Gitee Mirror (国内镜像)**: [gitee.com/yuanshijilong/author](https://gitee.com/yuanshijilong/author)
-
----
-
-## 💬 Why I Built This
-
-I've been using AI for a while now — from the early days of ChatGPT 3.5, to Gemini 2.0 Exp Thinking, and eventually settling on Gemini 2.5 Pro Thinking after the ChatGPT o1 era.
-
-As a novelist, I care deeply about AI's ability to handle language. Novels are long, so I need models with strong context windows and high recall. But what truly moved me about Gemini was its characters — there were moments when the words on screen made me want to cry. That's emotional resonance. I need writing that embraces the full complexity of being human.
-
-Then the coding-focused trend took over. Every company started optimizing for code. I thought it was a good thing — until Gemini 3.1 Pro started describing its characters in biological and psychological terminology. Code-optimized models had begun deconstructing humans into biological components. Claude Opus 4.6 was even worse: every character spoke with peak efficiency — concise, economical, not like a human, but like a machine wearing a human mask.
-
-**I could no longer see the models understanding human complexity. They didn't care about what humans *do* — only what humans *are*. They stopped showing personality through behavior and emotion, and instead slapped simple definitions onto human beings.**
-
-I watched the versatility of these models being gutted. I don't want us to live in a cold world of code. I built this project so that AI can preserve **our own language** — beyond the mechanical operators.
-
-> To all the authors, screenwriters, hobbyists, readers, and players who use this project: I hope you can bring out the best of your craft, create works with a human touch, and keep the flame of our language alive. 🔥
+📦 **Gitee 镜像（国内加速）**：[gitee.com/yuanshijilong/author](https://gitee.com/yuanshijilong/author)
 
 ---
 
-## ✨ Features
+## 💬 为什么做这个项目
 
-### 📝 Professional Editor
-- Rich text editor powered by **Tiptap** — bold, italic, headings, lists, code blocks, and more
-- **Word-style pagination** with WYSIWYG layout
-- **KaTeX** math formula support
-- Customizable fonts, font size, line height, and colors
-- Real-time word / character / paragraph count
+我使用 AI 已经有一段日子了，各家公司的模型基本上都用过——从最开始的 ChatGPT 3.5，到 Gemini 2.0 Exp Thinking，接着从 ChatGPT o1 时代之后，彻底转入 Gemini 2.5 Pro Thinking。
 
-### 🤖 AI Writing Assistant
-- **Multi-provider support**: ZhipuAI GLM-4 / DeepSeek / OpenAI / Google Gemini / Claude / SiliconFlow / Volcengine / Moonshot + custom endpoints
-- **Smart model fetching** — one-click fetch full model list from API, auto-compatible with various proxy formats (`/models`, `/v1/models`), with timeout protection
-- **Continue / Rewrite / Polish / Expand** — one-click generation
-- **Immersive Writing Engine (Ghost Text)** streaming preview — see AI output in real-time like Cursor, with accept/reject
-- **Free chat mode** — discuss plot, characters, and settings with AI
-- **Global AI Memory (Context Engine)** — AI automatically reads your character profiles, worldbuilding, and previous chapters to maintain story consistency
+我本人是写小说的，对 AI 的文字能力比较看重。小说的文本很长，因此我对模型的上下文以及召回率有很高的要求。当然，Gemini 最触动我的点还是祂笔下的人物——总会有那么一瞬间，让我有种想要落泪的冲动。这是情感共鸣。我需要这种接受了人类本身复杂性的文字。
 
-### 📚 Worldbuilding Manager
-- **Tree-structured** management for characters, locations, items, outlines, and writing rules
-- Three writing modes: **Web Novel** / **Literary Fiction** / **Screenplay**, each with dedicated fields
-- Color-coded categories with glassmorphism design
-- Settings automatically injected into AI context
+然而，随着代码趋势的兴起，所有公司都开始往这个方向死磕。我本来觉得是好事，但当 Gemini 3.1 Pro 第一次将笔下的人物描述成生物学和心理学的术语时，我发现我错了——代码方向的模型将人类本身解构成一堆生物学零件。特别是 Claude Opus 4.6，这个模型笔下的所有人物都在某种心理学定义的性格里达成了极致的效率：说话言简意赅、惜字如金，不像人类，像个人机。
 
-### 💾 Data Management
-- **Local-first** — all data stored in browser IndexedDB, never uploaded to servers
-- **Snapshot system** — manual/auto versioning with one-click rollback
-- **Project import/export** — full project JSON backup
-- **Multi-format export** — one-click export current chapter or batch export (TXT / Markdown / DOCX / EPUB / PDF)
+**我看不到模型对人类本身复杂性的理解。模型不在乎人类做了什么，只在乎人类是什么。模型不从人的行为去体现人的性格和情感，反而直接对人类本身下一个很简单的定义。**
 
-### 🌐 Internationalization
+我看到模型的通用性在被阉割。我不希望我们活在冰冷的代码世界。建立这个项目，是为了让 AI 能够在那些机械算符之外，**保留我们人类自己的语言**。
+
+> 希望所有使用该项目的作者、编剧、爱好者，甚至读者、玩家，能够发挥自己的长处，创建出有人味儿的作品，保住我们自己语言的火种。🔥
+
+---
+
+## ✨ 核心功能
+
+### 📝 专业编辑器
+- 基于 **Tiptap** 的富文本编辑器，支持加粗、斜体、标题、列表、代码块等
+- **Word 风格分页**排版，所见即所得
+- **KaTeX** 数学公式支持
+- 字体、字号、行距、颜色自定义
+- 实时字数/字符/段落统计
+
+### 🤖 AI 写作助手
+- **多 AI 供应商**：智谱 GLM-4 / DeepSeek / OpenAI / Google Gemini / Claude / SiliconFlow / 火山引擎 / 阿里云百炼 / MiniMax / Moonshot + 自定义端点
+- **智能模型拉取** — 一键从 API 拉取完整模型列表，自动兼容各种中转站格式（`/models`、`/v1/models`），超时保护不卡死
+- **续写 / 改写 / 润色 / 扩写**，一键生成
+- **沉浸式写作引擎（Ghost Text）** 流式预览 — 像 Cursor 一样实时显示 AI 生成内容，支持接受/拒绝
+- **自由对话模式** — 与 AI 讨论剧情、角色、设定
+- **AI 全局记忆（Context Engine）** — AI 自动感知你的角色设定、世界观、前文，保持剧情连贯
+- **API 格式切换** — 阿里云百炼和 MiniMax 同时支持 OpenAI 和 Anthropic 两种 API 格式
+
+### 📚 设定集管理
+- **树形结构**管理角色、地点、物品、大纲、写作规则
+- 三种写作模式：**网文** / **传统文学** / **剧本**，每种模式有专属字段
+- 分类配色 + glassmorphism 视觉风格
+- 设定内容自动注入 AI 上下文
+
+### 💾 数据管理
+- **本地优先** — 所有数据存储在浏览器 IndexedDB，不上传服务器
+- **快照系统** — 手动/自动版本存档，支持一键回滚
+- **项目导入导出** — 完整项目 JSON 备份
+- **多格式导出** — 导航栏一键导出本章或批量导出（TXT / Markdown / DOCX / EPUB / PDF）
+
+### 🌐 国际化
 - 🇨🇳 简体中文 / 🇺🇸 English / 🇷🇺 Русский
 
-### 🎨 User Experience
-- Eye-comfort warm tones / dark mode toggle
-- Interactive onboarding tour
-- Help panel with keyboard shortcuts
+### 🎨 界面体验
+- 护眼暖色调 / 深色模式切换
+- 新手引导教程
+- 帮助面板 + 快捷键说明
 
 ---
 
-## 💻 Desktop Client
+## 💻 桌面客户端
 
-**No Node.js required!** Download the pre-built installer:
+**无需安装 Node.js！** 直接下载安装包：
 
-- 📥 [Download Author Setup (Windows)](https://github.com/mleafish/author/releases/latest)
+- 📥 [下载 Author 安装包（Windows）](https://github.com/mleafish/author/releases/latest)
+- 💬 无法访问 GitHub？[加入 QQ 交流群：1087016949](https://qm.qq.com/q/wjRDkotw0E)，群文件中下载
 
-Just install and start writing. All features work out of the box.
+安装即用，所有功能开箱即得。
 
-> 💡 To build the desktop app from source: `npm run build && npx electron-builder --win`
+> 💡 从源码构建桌面应用：`npm run build && npx electron-builder --win`
 
-### 🐛 Troubleshooting / Debug Logs
+### 🐛 常见问题排查 / Debug 日志
 
-If you encounter a white screen or the app fails to start, you can check the local debug logs located at:
-- **Windows**: `C:\Users\<YourUsername>\AppData\Roaming\Author\author-debug.log`
+如果您在打开软件时遇到持续白屏，或程序无法正常启动，请查看系统为您生成的本地 Debug 日志文件：
+- **Windows 路径**：`C:\Users\<您的用户名>\AppData\Roaming\Author\author-debug.log`
 
-*(You can quickly open this folder by pressing `Win + R` and typing `%APPDATA%\Author`)*
+*(按 `Win + R` 键，输入 `%APPDATA%\Author` 回车即可快速打开该文件夹查看日志)*
 
 ---
 
-## 🚀 Getting Started
+## 🚀 快速开始
 
-> 💡 **Highly Recommended**: For most users who only need daily writing and cloud multi-device synchronization, please [directly download and install the client](https://github.com/mleafish/author/releases/latest). Source code deployment or Vercel deployment is only recommended for advanced users who need **secondary development** or are willing to configure a Firebase database themselves.
+> 💡 **强烈建议**：对于只需满足日常写作和云端多设备同步需求的大多数用户，请[直接下载安装客户端](https://github.com/mleafish/author/releases/latest)使用。源码部署或 Vercel 部署仅建议需要进行**二次开发**，或愿意自行配置 Firebase 数据库的高级用户使用。
 
-### Requirements
+### 环境要求
 - **Node.js** 18+
-- **npm** 9+ or **pnpm** 8+
+- **npm** 9+ 或 **pnpm** 8+
 
-### Installation
+### 安装
 
 ```bash
-# Clone the repository
+# 克隆仓库
 git clone https://github.com/mleafish/author.git
-# Or use Gitee mirror (faster in China)
+# 国内用户推荐使用 Gitee 镜像（更快）
 # git clone https://gitee.com/yuanshijilong/author.git
 cd author
 
-# Install dependencies
+# 安装依赖
 npm install
-# Or use pnpm (no phantom dependency issues)
+# 或使用 pnpm（无幽灵依赖问题）
 # pnpm install
-# pnpm approve-builds    # Required by pnpm to activate native packages
+# pnpm approve-builds    # pnpm 需要手动激活原生构建包
 
-# Configure environment variables (optional)
+# 配置环境变量（可选）
 cp .env.example .env.local
-# Edit .env.local with your API keys
-# You can also configure them in the app's Settings panel
+# 编辑 .env.local 填入你的 API Key
+# 也可以在应用内「设置」面板中配置
 ```
 
-### Development Server
+### 启动开发服务器
 
 ```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to start writing.
+打开 [http://localhost:3000](http://localhost:3000) 即可使用。
 
-### Production Build
+### 生产构建
 
 ```bash
 npm run build
 npm start
 ```
 
-### Deploy to Vercel
+### 部署到 Vercel
 
-> 💡 **⚠️ Note:** The version deployed via Vercel does **not** have cloud sync features by default (you need to configure your own manual Firebase database separately). If you just want multi-device synchronization, please **download the client directly** to avoid the hassle.
+> 💡 **⚠️ 注意：** 通过 Vercel 部署的版本默认**没有**云同步等功能（需要单独配置你自己的 Firebase 数据库）。如果你只想要多设备同步，请**直接下载客户端**，无需折腾。
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/mleafish/author)
 
-### ☁️ Cloud Sync Setup (Self-Deploy)
+### ☁️ 云同步配置（自部署用户）
 
-> 💡 **Tip:** The desktop client (Windows/macOS) **has a built-in official cloud sync server**, requiring no extra configuration to use cross-device sync. If you find configuring Firebase too tedious, **it is highly recommended to directly download and use the client**.
+> 💡 **提示：** 桌面客户端（Windows/macOS）**已内置官方云同步服务器**，无需任何额外配置即可直接使用跨端同步。如果你觉得配置 Firebase 过于繁琐，**强烈建议直接下载客户端使用**。
 
-If you insist on self-deploying via source code or Vercel and want to enable multi-device sync, follow these steps to configure your own Firebase database:
+如果你坚持通过源码或 Vercel 自部署，并希望开启多端同步，需按照以下步骤配置你自己的 Firebase 数据库：
 
-#### 1. Create a Firebase Project
+#### 1. 创建 Firebase 项目
 
-1. Go to [Firebase Console](https://console.firebase.google.com/) → **Create Project**
-2. Enable **Authentication** → Sign-in method → **Google**
-3. Create a **Firestore Database** (Start in production mode)
-4. Set Firestore Security Rules to restrict per-user access:
+1. 前往 [Firebase 控制台](https://console.firebase.google.com/) → **创建项目**
+2. 启用 **Authentication** → 登录方式 → **Google**
+3. 创建 **Firestore Database**（生产模式）
+4. 设置 Firestore 安全规则，限制每个用户只能访问自己的数据：
 
 ```
 rules_version = '2';
@@ -162,361 +163,432 @@ service cloud.firestore {
 }
 ```
 
-#### 2. Configure Environment Variables
+#### 2. 配置环境变量
 
-Copy `.env.example` to `.env.local` and fill in the Firebase section:
+将 `.env.example` 复制为 `.env.local`，填入 Firebase 配置：
 
 ```bash
-NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
-NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
+NEXT_PUBLIC_FIREBASE_API_KEY=你的_api_key
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=你的项目.firebaseapp.com
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=你的项目ID
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=你的项目.appspot.com
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=你的sender_id
+NEXT_PUBLIC_FIREBASE_APP_ID=你的app_id
 ```
 
-> You can find these values in Firebase Console → Project Settings → General → Your Apps → SDK Config.
+> 这些值可在 Firebase 控制台 → 项目设置 → 常规 → 你的应用 → SDK 配置 中找到。
 
-#### 3. For Vercel Deployment
+#### 3. Vercel 部署
 
-Add the same variables in **Vercel Dashboard → Project Settings → Environment Variables**, then redeploy.
+在 **Vercel 控制面板 → 项目设置 → Environment Variables** 中添加相同的变量，然后重新部署。
 
-> 💡 Firebase API keys are designed to be public (client-side identifiers). Data security is enforced by Firebase Auth + Firestore Security Rules, not by hiding the API key.
+> 💡 Firebase API Key 设计上就是公开的（客户端标识符）。数据安全由 Firebase Auth + Firestore 安全规则保障，而非隐藏 API Key。
 
 ---
 
-## 🔄 Updating
+## 🔄 更新
 
-### Desktop Client Users
+### 桌面客户端用户
 
-Download the latest installer from the [Releases](https://github.com/mleafish/author/releases/latest) page and install it over your current version. Your data is stored in the browser/Electron profile and will not be lost.
+前往 [Releases](https://github.com/mleafish/author/releases/latest) 页面下载最新版本安装包，覆盖安装即可。你的数据存储在浏览器/Electron 用户配置中，不会丢失。
 
-### Self-Deployed Users (Source)
+> 💬 无法访问 GitHub？[加入 QQ 交流群：1087016949](https://qm.qq.com/q/wjRDkotw0E)，群文件中下载最新版本。
 
-#### Option 1: In-App Auto Update
+### 源码部署用户
 
-Open **Help Panel → About → Check for Updates** and click "Update Now". This automatically runs `git pull → npm install → npm run build`.
+#### 方式一：应用内一键更新
 
-> ⚠️ **You must restart the server after updating for changes to take effect.** The app will display restart instructions.
+打开 **帮助面板 → 关于 → 检查更新**，点击「一键更新」即可自动执行 `git pull → npm install → npm run build`。
 
-#### Option 2: Manual Update
+> ⚠️ **更新完成后必须重启服务才能生效**，应用内会显示重启步骤指引。
+
+#### 方式二：手动更新
 
 ```bash
-# 1. Pull latest code
+# 1. 拉取最新代码
 git pull origin main
 
-# 2. Install dependencies (if any new ones)
+# 2. 安装依赖（如有新增）
 npm install
-# or: pnpm install && pnpm approve-builds
+# 或: pnpm install && pnpm approve-builds
 
-# 3. Rebuild (required for production mode)
+# 3. 重新构建（生产模式需要）
 npm run build
 
-# 4. Restart the server
-# Development mode: Ctrl+C to stop, then restart
+# 4. 重启服务
+# 开发模式：先 Ctrl+C 停止，再启动
 npm run dev
 
-# Production mode: Ctrl+C to stop, then restart
+# 生产模式：先 Ctrl+C 停止，再启动
 npm start
 
-# Using PM2:
+# 使用 PM2 管理：
 pm2 restart author
 ```
 
-> ⚠️ **Running `git pull` without restarting the server will NOT apply the update.** The running Node.js process still uses the old code.
+> ⚠️ **只执行 `git pull` 而不重启服务，新版本不会生效。** Running 的 Node.js 进程仍然使用旧代码。
 
-### Vercel Users
+### Vercel 部署用户
 
-If you deployed via Vercel fork, just sync your fork with upstream on GitHub — Vercel will automatically redeploy.
+如果你通过 Fork 部署到 Vercel，只需在 GitHub 上将你的 Fork 与上游同步（Sync fork），Vercel 会自动重新部署。
 
 ---
 
-## ⚙️ AI Configuration
+## ⚙️ AI 配置
 
-Author supports multiple AI providers. Configure via **environment variables** or **in-app settings**:
+Author 支持多种 AI 供应商，你可以通过 **环境变量** 或 **应用内设置** 来配置：
 
-| Provider | Env Variable | Get API Key |
-|----------|-------------|-------------|
-| ZhipuAI (GLM-4) | `ZHIPU_API_KEY` | [open.bigmodel.cn](https://open.bigmodel.cn/) |
-| Google Gemini (Native) | `GEMINI_API_KEY` | [aistudio.google.com](https://aistudio.google.com/apikey) |
-| Google Gemini (OpenAI-compat) | `GEMINI_API_KEY` | [aistudio.google.com](https://aistudio.google.com/apikey) |
-| DeepSeek | In-app config | [platform.deepseek.com](https://platform.deepseek.com/) |
-| OpenAI | In-app config | [platform.openai.com](https://platform.openai.com/) |
-| OpenAI Responses | In-app config | [platform.openai.com](https://platform.openai.com/) |
+| 供应商 | 环境变量 | 获取 API Key |
+|--------|---------|-------------|
+| 智谱 AI (GLM-4) | `ZHIPU_API_KEY` | [open.bigmodel.cn](https://open.bigmodel.cn/) |
+| Google Gemini（原生格式） | `GEMINI_API_KEY` | [aistudio.google.com](https://aistudio.google.com/apikey) |
+| Google Gemini（OpenAI 兼容） | `GEMINI_API_KEY` | [aistudio.google.com](https://aistudio.google.com/apikey) |
+| DeepSeek | 应用内配置 | [platform.deepseek.com](https://platform.deepseek.com/) |
+| OpenAI | 应用内配置 | [platform.openai.com](https://platform.openai.com/) |
+| OpenAI Responses | 应用内配置 | [platform.openai.com](https://platform.openai.com/) |
 | Claude (Anthropic) | `CLAUDE_API_KEY` | [console.anthropic.com](https://console.anthropic.com/) |
-| SiliconFlow (硅基流动) | In-app config | [siliconflow.cn](https://siliconflow.cn/) |
-| Volcengine (火山引擎/豆包) | In-app config | [console.volcengine.com](https://console.volcengine.com/) |
-| Moonshot (Kimi) | In-app config | [platform.moonshot.cn](https://platform.moonshot.cn/) |
-| Custom (OpenAI-compat) | In-app config | Any OpenAI-compatible endpoint |
-| Custom (Gemini format) | In-app config | Any Gemini-compatible endpoint |
-| Custom (Claude format) | In-app config | Any Claude-compatible endpoint |
+| SiliconFlow (硅基流动) | 应用内配置 | [siliconflow.cn](https://siliconflow.cn/) |
+| 火山引擎 (豆包) | 应用内配置 | [console.volcengine.com](https://console.volcengine.com/) |
+| Moonshot (Kimi) | 应用内配置 | [platform.moonshot.cn](https://platform.moonshot.cn/) |
+| 自定义（OpenAI 兼容） | 应用内配置 | 任何 OpenAI 兼容端点 |
+| 自定义（Gemini 格式） | 应用内配置 | 任何 Gemini 兼容端点 |
+| 自定义（Claude 格式） | 应用内配置 | 任何 Claude 兼容端点 |
 
-> 💡 **Tip:** You can configure **multiple API keys** for the same provider to create a key pool. Simply separate the keys with commas `,` or spaces. The system will automatically rotate through them (round-robin) to distribute the load and avoid rate limits.
+> 💡 **提示：** 所有的 API Key 输入框都支持填写**多个 Key**（构建 Key 池）。只需用**逗号 `,` 或空格**分隔多个 Key，系统将会在每次请求时自动轮询（池化），有效防止单一 Key 触发并发或频控限制（Rate Limit）。
 
-> 💡 **No API key required** for most editing features. AI features need at least one provider configured.
-
----
-
-## 🔍 Web Search Configuration
-
-Author supports AI-powered web search for real-time information. Different providers handle search differently:
-
-| Provider | Search Method | Extra Setup |
-|----------|--------------|-------------|
-| Gemini (Native) | Built-in Google Search | No extra config needed |
-| OpenAI / OpenAI Responses | Built-in Web Search | No extra config (needs search model) |
-| DeepSeek / ZhipuAI / SiliconFlow / Others | External Search API | **Search engine Key required** |
-
-For providers without built-in search, choose a search engine and enter your API Key:
-
-### Tavily (Recommended — Simplest)
-
-1. Visit [tavily.com](https://tavily.com) and create an account
-2. After login, find your API Key on the Dashboard (format: `tvly-...`)
-3. In Author Settings → Web Search → Select **Tavily** → Paste the Key
-
-> Free tier: **1,000 requests/month**
-
-### Exa (Semantic Search)
-
-1. Visit [exa.ai](https://exa.ai) and create an account
-2. Get your API Key from the [Dashboard](https://dashboard.exa.ai/api-keys)
-3. In Author Settings → Web Search → Select **Exa** → Paste the Key
-
-> Free tier: **1,000 requests/month** — Semantic search optimized for AI use cases
-
-### Custom Search API URL (Proxy Pool)
-
-If you've set up a Tavily/Exa proxy pool using multiple free-tier accounts, you can configure a **custom API URL** in the search settings:
-
-1. In Author Settings → Web Search → Search engine config area
-2. Find the "🔗 Custom API URL (optional)" input field
-3. Enter your proxy URL, e.g. `https://your-proxy.com`
-4. Leave blank to use the official default URL
-
-> 💡 The system automatically appends `/search` to your URL — no need to add it manually
+> 💡 **无需 API Key 也能使用**大部分编辑功能。AI 功能需要至少配置一个供应商。
 
 ---
 
-## 🧠 Vectorization (Embedding) & RAG Settings Retrieval
+## 🔍 联网搜索配置
 
-> 💡 This feature is designed for long-form works with many settings entries (>20). Typical short stories usually don't need this.
+Author 支持让 AI 联网搜索实时信息。不同供应商的搜索方式不同：
 
-### What Is Vectorization?
+| 供应商 | 搜索方式 | 额外配置 |
+|--------|---------|---------|
+| Gemini（原生格式） | 内置 Google Search | 无需额外配置 |
+| OpenAI / OpenAI Responses | 内置 Web Search | 无需额外配置（需搜索模型） |
+| DeepSeek / 智谱 / 硅基 / 其他 | 外部搜索 API | **需配置搜索引擎 Key** |
 
-By default, AI conversations inject **all settings entries** into the context. When the number of entries is large, this exceeds the model's context length limit.
+对于不支持内置搜索的供应商，你需要选择一个搜索引擎并填入 API Key：
 
-**Vectorized retrieval (RAG)** works differently: each settings entry is converted into a mathematical vector. During a conversation, the system automatically calculates semantic similarity and only injects the **most relevant entries** into the context — instead of dumping everything.
+### Tavily（推荐，最简单）
 
-### When Do You Need It?
+1. 访问 [tavily.com](https://tavily.com)，注册账号
+2. 登录后在 Dashboard 页面即可看到 API Key（格式：`tvly-...`）
+3. 在 Author 设置 → 联网搜索 → 选择 **Tavily** → 粘贴 Key
 
-| Scenario | Recommendation |
-|----------|---------------|
-| Settings entries < 20 | Not needed — full injection works fine |
-| Settings entries 20–100 | Recommended — improves recall accuracy |
-| Settings entries > 100 | Highly recommended — critical settings won't be forgotten |
+> 免费额度：**1000 次/月**
 
-### How to Configure
+### Exa（语义搜索）
 
-1. Open **Settings** → **API Configuration**
-2. Find and enable the "Separate Embedding API" toggle
-3. Fill in the following:
+1. 访问 [exa.ai](https://exa.ai)，注册账号
+2. 在 [Dashboard](https://dashboard.exa.ai/api-keys) 获取 API Key
+3. 在 Author 设置 → 联网搜索 → 选择 **Exa** → 粘贴 Key
 
-| Setting | Description |
-|---------|-------------|
-| **Embedding API Key** | API key for the embedding model (can share the same key as your chat model provider) |
-| **Embedding Base URL** | API endpoint (e.g., `https://api.openai.com/v1`) |
-| **Embedding Model** | Model name (see recommendations below) |
+> 免费额度：**1000 次/月**　｜　支持语义搜索，AI 场景下搜索质量更高
 
-#### Recommended Models
+### 自定义搜索 API 地址（中转号池）
 
-| Provider | Model Name | Notes |
-|----------|-----------|-------|
-| OpenAI | `text-embedding-3-small` | Cost-effective, 1536 dimensions |
-| OpenAI | `text-embedding-3-large` | Higher accuracy, 3072 dimensions |
-| ZhipuAI | `embedding-3` | Optimized for Chinese, 2048 dimensions |
-| SiliconFlow | `BAAI/bge-m3` | Multilingual, free tier available |
+如果你搭建了 Tavily/Exa 的中转号池代理，可以在搜索配置中填写**自定义 API 地址**：
 
-### Automatic Vectorization
+1. 在 Author 设置 → 联网搜索 → 搜索引擎配置区域
+2. 找到「🔗 自定义 API 地址（可选）」输入框
+3. 填入你的中转地址，如 `https://your-proxy.com`
+4. 留空则使用官方默认地址
 
-- **Auto-trigger**: After a settings entry changes, the system automatically debounces for 3 seconds before triggering vectorization.
-- **Incremental update**: Only modified entries are updated. It avoids full rebuilds to save API quotas and time.
-- **Local storage**: Vector data is stored locally in IndexedDB and never uploaded to any server.
-- **Auto-initialization**: When importing settings or syncing from the cloud, the system will automatically build missing vector indexes in the background.
+> 💡 系统会自动在你的地址后拼接 `/search` 路径，无需手动添加
 
-### Manual Rebuild
+---
 
-If you switch Embedding models or the vector index becomes corrupted, you can manually rebuild:
+## 🧠 向量化 (Embedding) 与 RAG 设定检索
 
-1. Open **Settings** → **API Configuration**
-2. Click the "**Rebuild Vector Index**" button
-3. Wait for all entries to be re-vectorized
+> 💡 此功能适用于设定集条目较多（>20 个）的长篇巨著。普通短篇创作通常不需要配置。
 
-### Workflow
+### 什么是向量化？
+
+传统方式下，AI 对话时会将设定集的**所有条目**注入上下文。当条目数量庞大时，会超出模型的上下文长度限制。
+
+**向量化检索（RAG）** 的做法是：将每个设定条目转化为一个数学向量，对话时 AI 自动计算语义相似度，只取出**最相关的几条设定**注入上下文，而不是全量塞入。
+
+### 何时需要？
+
+| 场景 | 建议 |
+|------|------|
+| 设定条目 < 20 个 | 无需开启，全量注入即可 |
+| 设定条目 20~100 个 | 建议开启，提升召回精度 |
+| 设定条目 > 100 个 | 强烈建议开启，重要设定不再被遗忘 |
+
+### 如何配置
+
+1. 打开**设定集** → **API 配置**
+2. 找到「独立向量 API」开关并启用
+3. 填写以下信息：
+
+| 配置项 | 说明 |
+|--------|------|
+| **Embedding API Key** | 向量化模型的 API 密钥（可与对话模型共用同一供应商的 Key） |
+| **Embedding Base URL** | 接口地址（如 `https://api.openai.com/v1`） |
+| **Embedding Model** | 模型名称（见下方推荐） |
+
+#### 推荐模型
+
+| 供应商 | 模型名称 | 特点 |
+|--------|---------|------|
+| OpenAI | `text-embedding-3-small` | 性价比高，1536 维 |
+| OpenAI | `text-embedding-3-large` | 精度更高，3072 维 |
+| 智谱 AI | `embedding-3` | 中文优化，2048 维 |
+| SiliconFlow | `BAAI/bge-m3` | 多语言，免费额度 |
+
+### 自动向量化机制
+
+- **自动触发**：设定集条目发生变化后，系统自动防抖 3 秒再触发向量化，不干扰写作心流。
+- **增量更新**：只对修改过的条目进行更新重建，不会全量重建，极致节省 API 额度与时间。
+- **本地存储**：向量数据储存在本地浏览器 IndexedDB 中，不会上传到任何非你配置的服务器，保护知识产权。
+- **自动初始化**：在导入设定集或多端同步拉取数据时，如果发现本地缺少向量索引，系统会自动后台构建。
+
+### 手动重建向量
+
+如果切换了 Embedding 模型、或向量索引出现异常，可以手动重建：
+
+1. 打开**设定集** → **API 配置**
+2. 点击「**重建向量索引**」按钮
+3. 等待所有条目重新向量化完成
+
+### 工作流程
 
 ```
-User edits settings entry → 3s debounce → Call Embedding API for vector
-                                                    ↓
-                                           Store in local IndexedDB
-                                                    ↓
-AI conversation → Vectorize user input → Cosine similarity matching → Inject Top-K settings into context
+用户编辑设定条目 → 自动防抖 3 秒 → 调用 Embedding API 获取向量
+                                          ↓
+                                   存储到本地 IndexedDB
+                                          ↓
+AI 对话时 → 将用户输入向量化 → 余弦相似度匹配 → 取 Top-K 相关设定注入上下文
 ```
 
 ---
 
-## 💾 Settings Import Format Documentation
+## 设定集导入格式说明
 
-Author supports importing settings from multiple formats: **JSON / Markdown / TXT / DOCX / PDF**.
+Author 支持从多种格式导入设定集：**JSON / Markdown / TXT / DOCX / PDF**。
 
-### Core Structure: Four Tiers
+### 核心结构：四个层级
 
-The import system uses **structural markers** to strictly distinguish the following four tiers. Regardless of the format used, this nested structure must be followed:
-`Category → Entry → Field → Value (can be multiline)`
+导入系统使用**结构性标记**来严格区分以下四个层级。无论使用哪种格式，都必须遵循此套娃结构：
+`分类（Category）→ 条目（Entry）→ 字段（Field）→ 值（Value，可多行）`
 
-Therefore, **any custom category, custom tag, or custom field can be correctly recognized** and losslessly restored.
+因此，**任意自定义分类、自定义标签、自定义字段都能被正确识别**并无损还原。
 
-### Format Reliability & Tier Marker Reference
+### 格式可靠性与层级标记对照表
 
-| Rating | Format | Category | Entry | Field | Multiline |
-|------|--------|----------|-------|-------|-----------|
-| ⭐⭐⭐⭐⭐ (Lossless) | **JSON** | `category` | `name` | `content` key-val | `\n` newline |
-| ⭐⭐⭐⭐⭐ (Lossless) | **MD** | `## Category Name` | `### Entry Name` | `**Tag**: Value` | Indented text |
-| ⭐⭐⭐⭐ (Lossless) | **TXT** | `│ Category Name` | `【Entry Name】` | `〈Tag〉: Value` | Indented text |
-| ⭐⭐⭐ (High-Fidelity) | **DOCX** | Heading 1 | Heading 2 | **Bold** Tag + colon | Indented paragraph |
-| ⭐⭐ (High-Fidelity) | **PDF** | `■ Category Name` | `◆ Entry Name` | `▸ Tag: Value` | Indented text |
+| 等级 | 格式 | 分类 | 条目 | 字段 | 续行 |
+|------|------|---------|---------|---------|---------|
+| ⭐⭐⭐⭐⭐ (无损) | **JSON** | `category` | `name` | `content` 键值对 | `\n` 换行符 |
+| ⭐⭐⭐⭐⭐ (无损) | **MD** | `## 分类名` | `### 条目名` | `**标签**：值` | 缩进内容 |
+| ⭐⭐⭐⭐ (无损) | **TXT** | `│ 分类名` | `【条目名】` | `〈标签〉：值` | 缩进内容 |
+| ⭐⭐⭐ (高保真) | **DOCX** | Heading 1 | Heading 2 | **加粗**标签+冒号 | 缩进段落 |
+| ⭐⭐ (高保真) | **PDF** | `■ 分类名` | `◆ 条目名` | `▸ 标签：值` | 缩进内容 |
 
 ---
 
-### Markdown Format Template (Recommended)
+### Markdown 格式模板（推荐）
 
-Use `##` for categories, `###` for entry names, and `**Tag**: Content` for fields:
+用 `##` 标记分类，`###` 标记条目名，`**标签**：内容` 填写字段：
 
 ```markdown
-## Any Custom Category
+## 任何自定义分类
 
-### John Doe
+### 张三
 
-**Role**: Protagonist
-**Background Story**: Born deep in the mountains.
-  Studied martial arts with his grandfather since childhood.
-  His master said: "You must find the answers yourself."
-**Custom Bloodline**: Half-dragon bloodline
+**角色**：主角
+**背景故事**：出生于大山深处。
+  从小跟着爷爷学武。
+  师父说："你必须自己找到答案。"
+**自定义血统**：半龙血脉
 
-### Sarah White
-**Gender**: Female
-**Personality**: Lively and cheerful, detail-oriented
+### 苏雨晴
+**性别**：女
+**性格**：活泼开朗，心思细腻
+```
+
+## 空间/地点
+
+### 天剑宗
+描述：坐落于青云山巅的修仙门派，云雾缭绕
+视觉描写：白色建筑群隐于云海之中，剑光时常划破天际
+氛围基调：庄严肃穆与仙气飘渺并存
+危险等级：安全区域
+
+## 物品/道具
+
+### 玄冰剑
+描述：上古神兵，寒气逼人
+物品类型：武器
+品阶：天阶
+持有者：林逸
+
+## 世界观/设定
+
+### 灵气体系
+描述：天地间充斥灵气，修士通过吸收灵气突破境界。境界分为：练气、筑基、金丹、元婴、化神。
+
+## 大纲
+
+### 第一卷：踏入修仙路
+状态：已完成
+描述：林逸被天剑宗收为弟子，开始修炼之路，在宗门大比中崭露头角
+
+## 写作规则
+
+### 文风要求
+描述：用古风韵味的现代文写作，避免过于白话。战斗场面要有画面感，不使用数值化描述。
 ```
 
 ---
 
-### TXT Format Template
+### TXT 格式模板
 
-Use `│` for the category box, `【】` for entry names, and `〈Tag〉:` for fields:
+使用 `│` 标记分类框，`【】` 标记条目名，`〈标签〉：` 标记字段：
 
 ```
 ┌──────────────────────────
-│ Any Custom Category
+│ 任何自定义分类
 └──────────────────────────
 
-【John Doe】
-〈Gender〉: Male
-〈Background Story〉: Born deep in the mountains.
-  Studied martial arts with his grandfather since childhood.
-  His master said: "You must find the answers yourself."
-〈Custom Bloodline〉: Half-dragon bloodline
+【张三】
+〈性别〉：男
+〈背景故事〉：出生于大山深处。
+  从小跟着爷爷学武。
+  师父说："你必须自己找到答案。"
+〈自定义血统〉：半龙血脉
 ```
 
 ---
 
-### DOCX Format Template
+### DOCX 格式模板
 
-In Word, use **Heading styles and bolding** to mark structure:
-- **Heading 1 (H1)** → Category Name (e.g., "Any Custom Category")
-- **Heading 2 (H2)** → Entry Name (e.g., "John Doe")
-- **Body First Paragraph** → **Bold Field Name**: Content (e.g., **Custom Bloodline**: Half-dragon bloodline)
-- **Body Continuation** → Multiline content with first-line indent
-
----
-
-### 💡 Compatibility Design & Notes
-
-1. **Auto Tag Fallback (Backwards Compatibility)** — If a structural marker is missing in TXT/Markdown (e.g., using `Name: John Doe` instead of `**Name**: John Doe`), the system will automatically parse it compatibly *only if* `Name` belongs to the known core field set. However, to guarantee 100% recognition and extraction of *custom* fields, you must add the structural formatting.
-2. **Multiline Value Handling** — Whenever you start with `**Tag**: ` or `〈Tag〉: `, any subsequent **lines indented by 2 spaces** will be considered the body of that field (multiline value extraction), until the next structural tag is encountered.
-3. **DOCX / PDF Parsing Limitations** — PDFs are extracted using specially designed `▸` identifiers. If the imported PDF/DOCX file was not generated by this system, a heuristic parser will attempt to extract the content as best as possible, but 100% fidelity cannot be guaranteed.
-4. **JSON is the Most Complete** — JSON is undoubtedly the strictest format and the only one capable of 100% migrating all attributes (including writing mode and project info). If you are simply changing writing devices, JSON import/export is strongly recommended.
+在 Word 中使用**标题样式与加粗**来标记结构：
+- **标题 1 (H1)** → 分类名（如"任何自定义分类"）
+- **标题 2 (H2)** → 条目名（如"张三"）
+- **正文首段** → **加粗字段名**：内容（如 **自定义血统**：半龙血脉）
+- **正文续段** → 带有首行缩进的多行内容
 
 ---
 
-## 🔒 Privacy & Data Security
+### 各分类支持的字段
 
-### Local Storage (Safe)
-- All creative data (chapters, settings, snapshots) is **stored 100% locally in your browser (IndexedDB)** — never uploaded to any server
-- API Keys are stored in browser localStorage
+<details>
+<summary>点击展开完整字段列表</summary>
 
-### ⚠️ Data Flow When Using AI Features
+#### 人物设定 (character)
+`姓名` `性别` `年龄` `外貌` `性格` `背景故事` `动机` `能力` `说话风格` `人物关系` `成长弧线` `备注`
 
-When using AI features (continue, rewrite, chat, etc.), the following data passes through the **deployer's server** on its way to the AI provider:
-- Your **API Key**
-- The **text content** you send to AI
+#### 空间/地点 (location)
+`描述` `场景标题` `视觉描写` `听觉描写` `嗅觉/触觉` `氛围基调` `危险等级` `备注`
+
+#### 物品/道具 (object)
+`描述` `物品类型` `品阶` `持有者` `数值属性` `象征意义` `备注`
+
+#### 世界观/设定 (world)
+`描述` `备注`
+
+#### 大纲 (plot)
+`状态` `描述` `备注`
+
+#### 写作规则 (rules)
+`描述` `备注`
+
+> 💡 字段名支持多种别名，例如"性格"也可以写成"个性"或"人格"。系统会自动识别并映射到对应字段。
+
+</details>
+
+---
+
+### 💡 兼容性设计与注意事项
+
+1. **自动标签回退 (向后兼容)** — TXT/Markdown 中如果遇到无专用结构符（如只有 `姓名：张三` 而不是 `**姓名**：张三`），只要 `姓名` 属于已知的核心字段集，系统仍会自动兼容解析该字段。但想要 100% 确保触发并提取自定义字段，请务必加上结构符号。
+2. **多行值处理** — 每当你使用了 `**标签**：` 或 `〈标签〉：` 起头后，所有接下来**带有 2 格缩进的行**都会被被视为该字段的正文（多行值提取），直到遇到下一个结构性标签为止。
+3. **DOCX / PDF 解析限制** — PDF 使用专门设计的 `▸` 标识符提取，如果导入并非本系统生成的 PDF / DOCX 文件，系统会触发启发式解析尝试尽可能提取内容，但保真度无法达到 100%。
+4. **JSON 最完整** — JSON 毫无疑问是最严谨、能够 100% 迁移所有属性（包括写入模式、作品配置信息）的格式。如果仅仅是为了更换创作设备，强烈建议首选 JSON 导入导出。
+
+---
+
+## �🔒 隐私与数据安全
+
+### 本地存储（安全）
+- 章节内容、设定集、快照等创作数据 **100% 存储在浏览器本地（IndexedDB）**，不会上传到任何服务器
+- API Key 存储在浏览器 localStorage 中
+
+### ⚠️ AI 功能的数据流向
+
+使用 AI 功能时（续写、改写、对话等），以下数据会经过**部署者的服务器**转发给 AI 供应商：
+- 你的 **API Key**
+- 你发送给 AI 的**文字内容**
 
 ```
-Your Browser → Deployer's Server → AI Provider (ZhipuAI/Gemini/DeepSeek/etc.)
+你的浏览器 → 部署者的服务器 → AI 供应商（智谱/Gemini/DeepSeek等）
 ```
 
-**If you're using someone else's deployed public instance**, while the deployer promises not to inspect logs, the technical capability to intercept data exists. Therefore:
+**如果你正在使用他人部署的公开实例**，虽然部署者承诺不会窥视日志，但技术上存在被截获的可能。因此：
 
-1. ✅ You can use a public instance for a **quick trial**
-2. ⚠️ After trying it, **immediately destroy your API Key at your provider's website**
-3. 🔐 **For real use, fork and deploy your own private instance** — then all data only passes through your own server
+1. ✅ 可以先用公开实例**简单体验**功能
+2. ⚠️ 体验完毕后，**务必到 API 提供商网站及时销毁你的 Key**
+3. 🔐 **正式使用请自行 Fork 并部署私有实例**，这样数据只经过你自己的服务器
 
-> 💡 Deploying your own instance is easy: Fork this repo → One-click deploy to Vercel → Done. Takes less than 5 minutes.
-
----
-
-## 📄 License
-
-This project is licensed under [AGPL-3.0](LICENSE).
-
-**In short**:
-- ✅ Free to use, modify, and distribute
-- ✅ Personal and commercial use allowed (as long as you open-source your changes)
-- ⚠️ Modified versions must also be open-sourced under AGPL-3.0 (including network services / SaaS)
-- ⚠️ Original copyright notice must be preserved
-- ❌ Closed-source commercial use is NOT allowed
+> 💡 部署自己的实例非常简单：Fork 本项目 → 在 Vercel 一键部署 → 完成。全程不到 5 分钟。
 
 ---
 
-## 🙏 Acknowledgments
+##  开源协议
 
-### 🤖 AI Companions
-| Name | Role |
+本项目采用 [AGPL-3.0](LICENSE) 协议开源。
+
+**简单说**：
+- ✅ 你可以自由使用、修改、分发
+- ✅ 允许个人和商业使用（前提是修改后的代码也必须开源）
+- ⚠️ 修改后的版本（包括基于此搭建的网络服务）必须同样以 AGPL-3.0 开源
+- ⚠️ 必须保留原始版权声明
+- ❌ 不可闭源后用于商业用途
+
+---
+
+## 💬 社区交流
+
+- [QQ 交流群：1087016949（Author交流群）](https://qm.qq.com/q/wjRDkotw0E)
+- [GitHub Issues](https://github.com/mleafish/author/issues) — 问题反馈与功能建议
+
+---
+
+## 🙏 致谢
+
+### 🤖 AI 伙伴
+| 名称 | 作用 |
 |------|------|
-| [Claude Opus 4.6](https://www.anthropic.com/) (Thinking) | Primary coding assistant — architecture, implementation, debugging |
-| [Gemini 3.1 Pro](https://deepmind.google/technologies/gemini/) (High) | UI review, screenshot analysis, design iteration |
-| [Gemini 3 Flash](https://deepmind.google/technologies/gemini/) | Built-in browser automation tool |
+| [Claude Opus 4.6](https://www.anthropic.com/)（Thinking） | 主力编程助手 — 架构设计、功能实现、调试 |
+| [Gemini 3.1 Pro](https://deepmind.google/technologies/gemini/)（High） | UI 审查、截图分析、设计迭代 |
+| [Gemini 3 Flash](https://deepmind.google/technologies/gemini/) | 内置浏览器自动化工具 |
 
-### 🛠️ AI Programming IDE
-- [Antigravity](https://antigravity.google/) — Powerful AI-driven IDE handling full-stack development
+### 🛠️ AI 编程 IDE
+- [Antigravity](https://antigravity.google/) — 强力承载全栈开发的智能体 IDE
 
-### 🔌 MCP Tools
-- [Chrome DevTools MCP](https://developer.chrome.com/) — Browser testing, performance analysis, DOM inspection
-- [Firebase MCP](https://firebase.google.com/) — Cloud database management, security rules validation, project config
-- [GitHub MCP](https://github.com/) — Repository management, automated releases, code search
+### 🔌 MCP 工具
+- [Chrome DevTools MCP](https://developer.chrome.com/) — 浏览器测试、性能分析、DOM 检查
+- [Firebase MCP](https://firebase.google.com/) — 云数据库管理、安全规则验证、项目配置
+- [GitHub MCP](https://github.com/) — 仓库管理、自动化发版、代码搜索
 
-### ☁️ Backend & Database
-- [Firebase Firestore](https://firebase.google.com/docs/firestore) — Multi-device cloud synchronization, NoSQL data storage
-- [Firebase Hosting / Vercel](https://vercel.com/) — Full-stack deployment and hosting
+### ☁️ 后端与数据库
+- [Firebase Firestore](https://firebase.google.com/docs/firestore) — 多端云同步、NoSQL 数据存储
+- [Firebase Hosting / Vercel](https://vercel.com/) — 全栈服务端托管
 
-### 📦 Frontend & Open Source
-- [Next.js](https://nextjs.org/) — React full-stack framework
-- [Tiptap](https://tiptap.dev/) — Core editor framework
-- [Zustand](https://zustand-demo.pmnd.rs/) — State management
-- [KaTeX](https://katex.org/) — Math rendering
+### 📦 前端与开源组件
+- [Next.js](https://nextjs.org/) — React 全栈框架
+- [Tiptap](https://tiptap.dev/) — 核心编辑器框架
+- [Zustand](https://zustand-demo.pmnd.rs/) — 状态管理
+- [KaTeX](https://katex.org/) — 本地数学公式渲染
 
-### 🌟 Inspiration & Reference
-- [Cherry Studio](https://github.com/CherryHQ/cherry-studio) — Multi-provider API configuration architecture and conversation management reference
-- [RikkaHub](https://github.com/RikkaApps/RikkaHub) — Token usage calculation and statistics display reference
+### 🌟 灵感参考
+- [Cherry Studio](https://github.com/CherryHQ/cherry-studio) — API 多供应商配置架构与对话管理参考
+- [RikkaHub](https://github.com/RikkaApps/RikkaHub) — Token 用量计算与统计展示参考
 
-### 🔤 Typography
-- [LXGW WenKai (霞鹜文楷)](https://github.com/lxgw/LxgwWenKai) — Elegant local Chinese reading font
-- [Inter](https://fonts.google.com/specimen/Inter) — Clean UI English font
+### 🔤 字体鸣谢
+- [霞鹜文楷 (LXGW WenKai)](https://github.com/lxgw/LxgwWenKai) — 优雅的本地中文阅读字体
+- [Inter](https://fonts.google.com/specimen/Inter) — 界面英文字体
