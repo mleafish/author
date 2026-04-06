@@ -1,16 +1,18 @@
 /**
- * 项目导出/导入 — 将所有 localStorage 数据打包为 JSON 文件
+ * 项目导出/导入 — 通过持久化层读写 IndexedDB，完整收集所有作品数据
  * 支持：章节、设定集、API 配置、聊天会话
  */
 
-const PROJECT_FILE_VERSION = 1;
+import { persistGet, persistSet } from './persistence';
 
-// 需要导出的所有 localStorage keys
+const PROJECT_FILE_VERSION = 2;
+
+// 存储在 localStorage 中的轻量配置键（通过 persistGet 读取即可自动走正确路径）
 const STORAGE_KEYS = {
-    chapters: 'author-chapters',
+    chapters: 'author-chapters',                // 旧全局章节 key（兼容）
     settings: 'author-project-settings',
-    settingsNodes: 'author-settings-nodes',   // 旧 key（兼容导入）
-    worksIndex: 'author-works-index',          // 新作品索引
+    settingsNodes: 'author-settings-nodes',     // 旧 key（兼容导入）
+    worksIndex: 'author-works-index',
     activeWork: 'author-active-work',
     chatSessions: 'author-chat-sessions',
 };
@@ -19,6 +21,8 @@ const STORAGE_KEYS = {
 const SUMMARY_PREFIX = 'author-chapter-summary-';
 // 按作品存储的设定集前缀
 const SETTINGS_NODES_PREFIX = 'author-settings-nodes-';
+// 按作品存储的章节前缀
+const CHAPTERS_PREFIX = 'author-chapters-';
 
 /**
  * 导出整个项目为 JSON 文件并下载
@@ -32,29 +36,41 @@ export async function exportProject() {
         _app: 'Author',
     };
 
-    // 收集所有主要数据
+    // 收集所有主要数据（通过持久化层读 IndexedDB）
     for (const [key, storageKey] of Object.entries(STORAGE_KEYS)) {
         try {
-            const raw = localStorage.getItem(storageKey);
-            data[key] = raw ? JSON.parse(raw) : null;
+            data[key] = await persistGet(storageKey) ?? null;
         } catch {
             data[key] = null;
         }
     }
 
-    // 收集按作品存储的设定集节点
+    // 获取作品索引，遍历每个作品收集章节和设定集
+    const worksIndex = data.worksIndex || [];
+    const perWorkChapters = {};
     const perWorkSettings = {};
-    for (let i = 0; i < localStorage.length; i++) {
-        const k = localStorage.key(i);
-        if (k?.startsWith(SETTINGS_NODES_PREFIX) && k !== 'author-settings-nodes-backup') {
-            try {
-                perWorkSettings[k] = JSON.parse(localStorage.getItem(k));
-            } catch { /* skip */ }
-        }
+
+    for (const work of worksIndex) {
+        const workId = work.id;
+        if (!workId) continue;
+
+        // 收集该作品的章节
+        try {
+            const chapters = await persistGet(`${CHAPTERS_PREFIX}${workId}`);
+            if (chapters) perWorkChapters[`${CHAPTERS_PREFIX}${workId}`] = chapters;
+        } catch { /* skip */ }
+
+        // 收集该作品的设定集节点
+        try {
+            const nodes = await persistGet(`${SETTINGS_NODES_PREFIX}${workId}`);
+            if (nodes) perWorkSettings[`${SETTINGS_NODES_PREFIX}${workId}`] = nodes;
+        } catch { /* skip */ }
     }
+
+    data.perWorkChapters = perWorkChapters;
     data.perWorkSettings = perWorkSettings;
 
-    // 收集章节摘要
+    // 收集章节摘要（仍从 localStorage，摘要是轻量数据）
     const summaries = {};
     for (let i = 0; i < localStorage.length; i++) {
         const k = localStorage.key(i);
@@ -94,21 +110,28 @@ export async function importProject(file) {
             return { success: false, message: '文件格式不正确，不是 Author 存档文件' };
         }
 
-        // 恢复主要数据
+        // 恢复主要数据（通过持久化层写入 IndexedDB + 服务端）
         for (const [key, storageKey] of Object.entries(STORAGE_KEYS)) {
             if (data[key] !== undefined && data[key] !== null) {
-                localStorage.setItem(storageKey, JSON.stringify(data[key]));
+                await persistSet(storageKey, data[key]);
+            }
+        }
+
+        // 恢复按作品存储的章节（v2 格式）
+        if (data.perWorkChapters && typeof data.perWorkChapters === 'object') {
+            for (const [k, v] of Object.entries(data.perWorkChapters)) {
+                if (v) await persistSet(k, v);
             }
         }
 
         // 恢复按作品存储的设定集节点
         if (data.perWorkSettings && typeof data.perWorkSettings === 'object') {
             for (const [k, v] of Object.entries(data.perWorkSettings)) {
-                if (v) localStorage.setItem(k, JSON.stringify(v));
+                if (v) await persistSet(k, v);
             }
         }
 
-        // 恢复章节摘要
+        // 恢复章节摘要（轻量数据，写入 localStorage）
         if (data.chapterSummaries && typeof data.chapterSummaries === 'object') {
             for (const [chapterId, summary] of Object.entries(data.chapterSummaries)) {
                 if (summary) {
@@ -804,22 +827,19 @@ export function exportWorkAsPdf(chapters, fileName) {
 /**
  * 获取当前项目数据的概要信息（用于显示）
  */
-export function getProjectSummary() {
+export async function getProjectSummary() {
     if (typeof window === 'undefined') return null;
 
     try {
-        const chaptersRaw = localStorage.getItem(STORAGE_KEYS.chapters);
-        const chapters = chaptersRaw ? JSON.parse(chaptersRaw) : [];
-        const nodesRaw = localStorage.getItem(STORAGE_KEYS.settingsNodes);
-        const nodes = nodesRaw ? JSON.parse(nodesRaw) : [];
-        const sessionsRaw = localStorage.getItem(STORAGE_KEYS.chatSessions);
-        const sessions = sessionsRaw ? JSON.parse(sessionsRaw) : {};
+        const chapters = await persistGet(STORAGE_KEYS.chapters) || [];
+        const nodes = await persistGet(STORAGE_KEYS.settingsNodes) || [];
+        const sessions = await persistGet(STORAGE_KEYS.chatSessions) || {};
 
         return {
-            chapterCount: chapters.length,
-            settingsNodeCount: nodes.length,
+            chapterCount: Array.isArray(chapters) ? chapters.length : 0,
+            settingsNodeCount: Array.isArray(nodes) ? nodes.length : 0,
             sessionCount: Object.keys(sessions.sessions || {}).length,
-            totalChars: chapters.reduce((sum, ch) => sum + (ch.content?.length || 0), 0),
+            totalChars: Array.isArray(chapters) ? chapters.reduce((sum, ch) => sum + (ch.content?.length || 0), 0) : 0,
         };
     } catch {
         return null;
