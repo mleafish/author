@@ -58,3 +58,6 @@ npm run build && npx electron-builder --win
 ## 许可证
 
 [AGPL-3.0](LICENSE)
+
+## 友链
+[Linuxdo](https://linux.do/)
