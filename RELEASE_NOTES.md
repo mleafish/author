@@ -1,3 +1,14 @@
+## v1.0.1 存档系统增强
+
+### 改动内容
+
+- **存档版本升至 v2** — 新增按作品 ID 索引章节（`perWorkChapters`），确保多作品数据完整导出
+- **完全向后兼容** — v1 旧存档文件仍可正常导入
+- **新增导出偏好设置** — 主题、语言、API 配置文件、视觉设置等偏好随存档一起导出/导入
+- **修复存档数据丢失** — 导出/导入改用持久化层读写 IndexedDB，不再依赖 localStorage
+
+---
+
 ## v1.0.0 本地化版本首发
 
 基于 [YuanShiJiLoong/author](https://github.com/YuanShiJiLoong/author) 修改的纯本地版本。

@@ -17,6 +17,17 @@ const STORAGE_KEYS = {
     chatSessions: 'author-chat-sessions',
 };
 
+// 偏好设置键（存储在 localStorage 中的用户偏好，导出时一并收集）
+const PREFERENCE_KEYS = {
+    theme: 'author-theme',
+    lang: 'author-lang',
+    visual: 'author-visual',
+    apiProfiles: 'author-api-profiles',
+    apiConfig: 'author-api-config',
+    contextSelection: 'author-context-selection',
+    tokenStats: 'author-token-stats',
+};
+
 // 章节摘要前缀
 const SUMMARY_PREFIX = 'author-chapter-summary-';
 // 按作品存储的设定集前缀
@@ -69,6 +80,16 @@ export async function exportProject() {
 
     data.perWorkChapters = perWorkChapters;
     data.perWorkSettings = perWorkSettings;
+
+    // 收集偏好设置
+    const preferences = {};
+    for (const [key, storageKey] of Object.entries(PREFERENCE_KEYS)) {
+        try {
+            const val = await persistGet(storageKey);
+            if (val !== undefined && val !== null) preferences[key] = val;
+        } catch { /* skip */ }
+    }
+    data.preferences = preferences;
 
     // 收集章节摘要（仍从 localStorage，摘要是轻量数据）
     const summaries = {};
@@ -136,6 +157,15 @@ export async function importProject(file) {
             for (const [chapterId, summary] of Object.entries(data.chapterSummaries)) {
                 if (summary) {
                     localStorage.setItem(SUMMARY_PREFIX + chapterId, summary);
+                }
+            }
+        }
+
+        // 恢复偏好设置
+        if (data.preferences && typeof data.preferences === 'object') {
+            for (const [key, storageKey] of Object.entries(PREFERENCE_KEYS)) {
+                if (data.preferences[key] !== undefined && data.preferences[key] !== null) {
+                    await persistSet(storageKey, data.preferences[key]);
                 }
             }
         }
