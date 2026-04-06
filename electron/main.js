@@ -30,21 +30,186 @@ const fs = require('fs');
     }
 })();
 
+// 保证单实例运行
+const gotTheLock = app.requestSingleInstanceLock();
+
 // 日志文件 - 写到操作系统的 UserData 目录（避免 C 盘权限问题被静默拦截）
 const logFile = path.join(app.getPath('userData'), 'author-debug.log');
+const userDataPath = app.getPath('userData');
 function log(msg) {
     const line = `[${new Date().toISOString()}] ${msg}\n`;
     console.log(msg);
     fs.appendFile(logFile, line, () => { });
 }
 
-// 防止多开
-const gotTheLock = app.requestSingleInstanceLock();
+// ==================== 数据存储路径配置 ====================
+
+const configFilePath = path.join(app.getPath('userData'), 'author-config.json');
+
+function loadConfig() {
+    try {
+        if (fs.existsSync(configFilePath)) {
+            return JSON.parse(fs.readFileSync(configFilePath, 'utf-8'));
+        }
+    } catch (e) {
+        log(`[Config] Failed to load config: ${e.message}`);
+    }
+    return {};
+}
+
+function saveConfig(config) {
+    try {
+        fs.writeFileSync(configFilePath, JSON.stringify(config, null, 2), 'utf-8');
+    } catch (e) {
+        log(`[Config] Failed to save config: ${e.message}`);
+    }
+}
+
+function getDefaultDataDir() {
+    const isPackaged = app.isPackaged;
+    if (isPackaged) {
+        return path.join(process.resourcesPath, 'standalone', 'data');
+    }
+    return path.join(__dirname, '..', '.next', 'standalone', 'data');
+}
+
+function getCurrentDataDir() {
+    const config = loadConfig();
+    return config.dataDir || getDefaultDataDir();
+}
+
+// 启动时设置 DATA_DIR 环境变量，确保 /api/storage 路由使用正确的路径
+(function applyDataDir() {
+    const dataDir = getCurrentDataDir();
+    process.env.DATA_DIR = dataDir;
+    log(`[Config] DATA_DIR set to: ${dataDir}`);
+})();
+
+// 递归复制目录
+async function copyDirRecursive(src, dest) {
+    const fsPromises = require('fs').promises;
+    await fsPromises.mkdir(dest, { recursive: true });
+    const entries = await fsPromises.readdir(src, { withFileTypes: true });
+    for (const entry of entries) {
+        const srcPath = path.join(src, entry.name);
+        const destPath = path.join(dest, entry.name);
+        if (entry.isDirectory()) {
+            await copyDirRecursive(srcPath, destPath);
+        } else {
+            await fsPromises.copyFile(srcPath, destPath);
+        }
+    }
+}
+
+// 递归删除目录
+async function removeDirRecursive(dirPath) {
+    const fsPromises = require('fs').promises;
+    await fsPromises.rm(dirPath, { recursive: true, force: true });
+}
+
+ipcMain.handle('open-data-folder', async () => {
+    try {
+        const dataDir = getCurrentDataDir();
+        const result = await shell.openPath(dataDir);
+        if (result) {
+            log(`[OpenDataFolder] Failed: ${result}`);
+            return { success: false, error: result };
+        }
+        log(`[OpenDataFolder] Opened: ${dataDir}`);
+        return { success: true, path: dataDir };
+    } catch (error) {
+        const message = error?.message || String(error);
+        log(`[OpenDataFolder] Error: ${message}`);
+        return { success: false, error: message };
+    }
+});
+
+ipcMain.handle('get-data-path', async () => {
+    return { success: true, path: getCurrentDataDir() };
+});
+
+ipcMain.handle('select-data-path', async () => {
+    try {
+        const result = await dialog.showOpenDialog(mainWindow, {
+            title: '选择数据存储位置',
+            properties: ['openDirectory', 'createDirectory'],
+            defaultPath: getCurrentDataDir(),
+        });
+        if (result.canceled || !result.filePaths || result.filePaths.length === 0) {
+            return { success: false, canceled: true };
+        }
+        return { success: true, path: result.filePaths[0] };
+    } catch (error) {
+        const message = error?.message || String(error);
+        log(`[SelectDataPath] Error: ${message}`);
+        return { success: false, error: message };
+    }
+});
+
+ipcMain.handle('migrate-data-path', async (event, newPath) => {
+    try {
+        const oldPath = getCurrentDataDir();
+        log(`[MigrateData] From: ${oldPath} -> To: ${newPath}`);
+
+        // 同一路径无需迁移
+        if (path.resolve(oldPath) === path.resolve(newPath)) {
+            return { success: true, path: newPath, message: 'Same path, no migration needed' };
+        }
+
+        // 确保目标目录存在
+        if (!fs.existsSync(newPath)) {
+            fs.mkdirSync(newPath, { recursive: true });
+        }
+
+        // 如果旧目录存在且有内容，复制到新位置
+        if (fs.existsSync(oldPath)) {
+            const entries = fs.readdirSync(oldPath);
+            if (entries.length > 0) {
+                log(`[MigrateData] Copying ${entries.length} entries...`);
+                await copyDirRecursive(oldPath, newPath);
+                log(`[MigrateData] Copy complete`);
+
+                // 删除旧目录中的数据
+                await removeDirRecursive(oldPath);
+                log(`[MigrateData] Old data cleaned up`);
+            }
+        }
+
+        // 更新配置
+        const config = loadConfig();
+        config.dataDir = newPath;
+        saveConfig(config);
+
+        // 更新环境变量
+        process.env.DATA_DIR = newPath;
+        log(`[MigrateData] Config updated, DATA_DIR = ${newPath}`);
+
+        // 重启应用以确保所有组件使用新路径
+        setTimeout(() => {
+            app.relaunch();
+            app.quit();
+        }, 1500);
+
+        return { success: true, path: newPath };
+    } catch (error) {
+        const message = error?.message || String(error);
+        log(`[MigrateData] Error: ${message}`);
+        return { success: false, error: message };
+    }
+});
+
 if (!gotTheLock) {
     log('Another instance is running, quitting.');
     app.quit();
     process.exit(0);
 }
+
+app.on('second-instance', () => {
+    if (mainWindow && !mainWindow.isDestroyed()) {
+        if (mainWindow.isMinimized()) mainWindow.restore();
+        mainWindow.focus();
+    }
+});
 
 let mainWindow;
 let splashWindow;

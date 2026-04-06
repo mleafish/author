@@ -148,7 +148,7 @@ AI 会自动参考：
 
 ### 偏好设置 (Preferences)
 在设定集的最后一栏，你可以随时：
-- 切换语言界面（简体中文、English、Русский）
+- 切换语言界面（简体中文、English）
 - 切换工作台视觉主题（经典纸张 / 现代玻璃）
 
 ### 多作品管理
@@ -710,16 +710,6 @@ export default function HelpPanel({ open, onClose }) {
                 <div className="help-header">
                     <h2>{t('help.title')}</h2>
                     <div style={{ display: 'flex', gap: '12px' }}>
-                        <button
-                            className="tour-btn ghost"
-                            style={{ padding: '6px 12px', fontSize: '13px' }}
-                            onClick={() => {
-                                localStorage.removeItem('author-onboarding-done');
-                                window.location.reload();
-                            }}
-                        >
-                            {t('help.btnRetour')}
-                        </button>
                         <button className="help-close-btn" onClick={onClose}>✕</button>
                     </div>
                 </div>

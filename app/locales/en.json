@@ -339,7 +339,10 @@
     "menuLoad": "Load Project",
     "menuImportWork": "Import Work",
     "menuHelp": "Help & Tutorial",
+    "menuDataFolder": "Data Storage Folder",
     "menuCommunity": "Project Links",
+    "openDataFolderSuccess": "Opened the data storage folder",
+    "openDataFolderFailed": "Failed to open the data storage folder: {error}",
     "importWorkConfirm": "Importing will replace all current chapters. Detected {count} chapters, {words} words total. Confirm import?",
     "importWorkSuccess": "Successfully imported {count} chapters",
     "importWorkFailed": "Import failed: {error}",
@@ -473,8 +476,7 @@
     "btnEndTour": "End Tour"
   },
   "help": {
-    "title": "Help Documentation",
-    "btnRetour": "Replay Tour"
+    "title": "Help Documentation"
   },
   "apiConfig": {
     "savedProfiles": "Saved Profiles",
@@ -591,7 +593,15 @@
     "layoutOverlay": "Overlay",
     "layoutPush": "Push",
     "layoutOverlayDesc": "Sidebar floats over the editor",
-    "layoutPushDesc": "Sidebar pushes the editor aside"
+    "layoutPushDesc": "Sidebar pushes the editor aside",
+    "dataStorageLabel": "Data Storage Location",
+    "dataStoragePath": "Current Path",
+    "dataStorageChange": "Change Location",
+    "dataStorageChanging": "Migrating data...",
+    "dataStorageSuccess": "Data migrated successfully, app will restart",
+    "dataStorageFailed": "Data migration failed: {error}",
+    "dataStorageDesc": "All writing data will be automatically moved to the new location. The app will restart.",
+    "dataStorageOpen": "Open Folder"
   },
   "bookInfo": {
     "intro": "This information helps AI understand your work's direction and style. Even filling in just one or two fields will significantly improve AI quality.",

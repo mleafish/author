@@ -169,7 +169,6 @@ const LOCALSTORAGE_KEYS = new Set([
     'author-lang',
     'author-visual',
     'author-writing-background',
-    'author-onboarding-done',
     'author-context-selection',
     'author-api-profiles',
     'author-api-config',

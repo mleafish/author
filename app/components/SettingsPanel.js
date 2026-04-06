@@ -1636,7 +1636,7 @@ function PreferencesForm() {
             <div style={{ marginBottom: 28 }}>
                 <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', marginBottom: 12 }}>{t('preferences.langLabel')}</label>
                 <div style={{ display: 'flex', gap: 12 }}>
-                    {['zh', 'en', 'ru'].map(lang => (
+                    {['zh', 'en'].map(lang => (
                         <button
                             key={lang}
                             style={{
@@ -1648,7 +1648,7 @@ function PreferencesForm() {
                             }}
                             onClick={() => setLanguage(lang)}
                         >
-                            {lang === 'zh' ? '🇨🇳 简体中文' : lang === 'en' ? '🇬🇧 English' : '🇷🇺 Русский'}
+                            {lang === 'zh' ? '🇨🇳 简体中文' : '🇬🇧 English'}
                         </button>
                     ))}
                 </div>
@@ -1837,6 +1837,125 @@ function PreferencesForm() {
                     </span>
                 </div>
             </div>
+
+            {/* 数据存储位置（仅 Electron 桌面端） */}
+            {typeof window !== 'undefined' && window.electronAPI?.isElectron && (
+                <DataStorageSection t={t} />
+            )}
+        </div>
+    );
+}
+
+function DataStorageSection({ t }) {
+    const [dataPath, setDataPath] = useState('');
+    const [migrating, setMigrating] = useState(false);
+    const [message, setMessage] = useState(null); // { type: 'success' | 'error', text }
+
+    useEffect(() => {
+        window.electronAPI?.getDataPath?.().then(res => {
+            if (res?.success) setDataPath(res.path);
+        });
+    }, []);
+
+    const handleChangePath = async () => {
+        setMessage(null);
+        const selectResult = await window.electronAPI?.selectDataPath?.();
+        if (!selectResult?.success) return; // canceled or error
+
+        const newPath = selectResult.path;
+        setMigrating(true);
+        try {
+            const migrateResult = await window.electronAPI?.migrateDataPath?.(newPath);
+            if (migrateResult?.success) {
+                setDataPath(newPath);
+                setMessage({ type: 'success', text: t('preferences.dataStorageSuccess') });
+            } else {
+                setMessage({ type: 'error', text: (t('preferences.dataStorageFailed') || '').replace('{error}', migrateResult?.error || 'Unknown') });
+            }
+        } catch (err) {
+            setMessage({ type: 'error', text: (t('preferences.dataStorageFailed') || '').replace('{error}', err?.message || 'Unknown') });
+        } finally {
+            setMigrating(false);
+        }
+    };
+
+    const handleOpenFolder = async () => {
+        await window.electronAPI?.openDataFolder?.();
+    };
+
+    return (
+        <div style={{ marginBottom: 24 }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', marginBottom: 10 }}>
+                <FolderOpen size={15} />
+                <span>{t('preferences.dataStorageLabel')}</span>
+            </label>
+            <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 12, lineHeight: 1.6 }}>
+                {t('preferences.dataStorageDesc')}
+            </div>
+
+            <div style={{
+                display: 'flex', alignItems: 'center', gap: 10,
+                padding: '10px 14px',
+                background: 'var(--bg-primary)',
+                border: '1px solid var(--border-light)',
+                borderRadius: 'var(--radius-md)',
+                marginBottom: 12,
+            }}>
+                <span style={{ fontSize: 12, color: 'var(--text-muted)', whiteSpace: 'nowrap', flexShrink: 0 }}>
+                    {t('preferences.dataStoragePath')}
+                </span>
+                <span style={{
+                    fontSize: 12, color: 'var(--text-primary)',
+                    overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                    flex: 1, direction: 'rtl', textAlign: 'left',
+                }} title={dataPath}>
+                    {dataPath}
+                </span>
+            </div>
+
+            <div style={{ display: 'flex', gap: 10 }}>
+                <button
+                    onClick={handleChangePath}
+                    disabled={migrating}
+                    style={{
+                        display: 'inline-flex', alignItems: 'center', gap: 6,
+                        padding: '9px 16px', borderRadius: 'var(--radius-md)',
+                        border: '1px solid var(--accent)',
+                        background: migrating ? 'var(--bg-secondary)' : 'var(--accent-light)',
+                        cursor: migrating ? 'not-allowed' : 'pointer',
+                        fontSize: 13, color: 'var(--accent)', fontWeight: 500,
+                        opacity: migrating ? 0.6 : 1, transition: 'all 0.15s',
+                    }}
+                >
+                    <FolderOpen size={14} />
+                    {migrating ? t('preferences.dataStorageChanging') : t('preferences.dataStorageChange')}
+                </button>
+                <button
+                    onClick={handleOpenFolder}
+                    style={{
+                        display: 'inline-flex', alignItems: 'center', gap: 6,
+                        padding: '9px 16px', borderRadius: 'var(--radius-md)',
+                        border: '1px solid var(--border-light)', background: 'var(--bg-card)',
+                        cursor: 'pointer', fontSize: 13, color: 'var(--text-primary)',
+                        transition: 'all 0.15s',
+                    }}
+                >
+                    {t('preferences.dataStorageOpen')}
+                </button>
+            </div>
+
+            {message && (
+                <div style={{
+                    marginTop: 10, padding: '8px 12px',
+                    borderRadius: 'var(--radius-md)',
+                    fontSize: 12,
+                    background: message.type === 'success' ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)',
+                    color: message.type === 'success' ? 'var(--success, #22c55e)' : 'var(--error, #ef4444)',
+                    border: `1px solid ${message.type === 'success' ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)'}`,
+                }}>
+                    {message.text}
+                </div>
+            )}
         </div>
     );
 }

@@ -16,7 +16,7 @@ import SettingsCategoryPanel, { getCategoryIcon, getCategoryColor, getCategoryLa
 import SettingsCategoryPopover, { getPinnedCategories, savePinnedCategories } from './SettingsCategoryPopover';
 
 /** 更多操作下拉菜单（Portal 渲染到 body，彻底避免 overflow 裁剪） */
-function MoreMenuPortal({ anchorRef, t, setShowSettings, setShowMoreMenu, onOpenHelp, setShowGitPopup }) {
+function MoreMenuPortal({ anchorRef, t, setShowSettings, setShowMoreMenu, onOpenHelp, setShowGitPopup, showToast }) {
     const menuRef = useRef(null);
     const [mounted, setMounted] = useState(false);
     useEffect(() => { setMounted(true); }, []);
@@ -53,6 +53,22 @@ function MoreMenuPortal({ anchorRef, t, setShowSettings, setShowMoreMenu, onOpen
                     <SlidersHorizontal size={14} style={{ flexShrink: 0 }} /> <span>{t('settings.tabPreferences') || '偏好设置'}</span>
                 </button>
                 <div style={{ height: 1, background: 'var(--border-light)', margin: '4px 0' }} />
+                <button className="dropdown-item" style={{ display: 'flex', alignItems: 'center', gap: 8 }} onClick={async () => {
+                    setShowMoreMenu(false);
+                    const openDataFolder = window?.electronAPI?.openDataFolder;
+                    if (typeof openDataFolder !== 'function') {
+                        showToast?.(t('sidebar.openDataFolderFailed').replace('{error}', '当前环境不支持'), 'error');
+                        return;
+                    }
+                    const result = await openDataFolder();
+                    if (result?.success) {
+                        showToast?.(t('sidebar.openDataFolderSuccess') || '已打开数据存储文件夹', 'success');
+                        return;
+                    }
+                    showToast?.((t('sidebar.openDataFolderFailed') || '打开数据存储文件夹失败：{error}').replace('{error}', result?.error || 'Unknown error'), 'error');
+                }}>
+                    <FolderOpen size={14} style={{ flexShrink: 0 }} /> <span>{t('sidebar.menuDataFolder') || '数据存储地址'}</span>
+                </button>
                 <button className="dropdown-item" style={{ display: 'flex', alignItems: 'center', gap: 8 }} onClick={() => { onOpenHelp?.(); setShowMoreMenu(false); }}>
                     <HelpCircle size={14} style={{ flexShrink: 0 }} /> <span>{t('sidebar.menuHelp') || '帮助'}</span>
                 </button>
@@ -711,7 +727,7 @@ export default function Sidebar({ onOpenHelp, onToggle, editorRef, pushMode }) {
                         <div ref={moreMenuAnchorRef} style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
                             <IconButton id="tour-settings" icon={<Settings size={18} />} label={showMoreMenu ? '' : (t('sidebar.moreActions') || '更多操作')} text={sidebarOpen ? (t('sidebar.navMore') || '更多') : undefined} tooltipSide="right" onClick={() => setShowMoreMenu(!showMoreMenu)} className="nav-item" />
                             {showMoreMenu && (
-                                <MoreMenuPortal anchorRef={moreMenuAnchorRef} t={t} setShowSettings={setShowSettings} setShowMoreMenu={setShowMoreMenu} onOpenHelp={onOpenHelp} setShowGitPopup={setShowGitPopup} />
+                                <MoreMenuPortal anchorRef={moreMenuAnchorRef} t={t} setShowSettings={setShowSettings} setShowMoreMenu={setShowMoreMenu} onOpenHelp={onOpenHelp} setShowGitPopup={setShowGitPopup} showToast={showToast} />
                             )}
                         </div>
                     </div>

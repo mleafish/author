@@ -26,6 +26,10 @@ function normalizeBackgroundLayer(value) {
     };
 }
 
+function normalizeLanguage(lang) {
+    return lang === 'zh' || lang === 'en' ? lang : null;
+}
+
 function normalizeWritingBackground(value) {
     if (!value || typeof value !== 'object') return {
         canvas: { ...DEFAULT_WRITING_BACKGROUND.canvas },
@@ -146,13 +150,18 @@ const store = create((set, get) => ({
     setWritingMode: (mode) => set({ writingMode: mode }),
 
     // --- Localization & Theming ---
-    language: typeof window !== 'undefined' ? localStorage.getItem('author-lang') || null : null,
+    language: typeof window !== 'undefined' ? normalizeLanguage(localStorage.getItem('author-lang')) : null,
     setLanguage: (lang) => set(() => {
+        const nextLanguage = normalizeLanguage(lang);
         if (typeof window !== 'undefined') {
-            localStorage.setItem('author-lang', lang);
-            persistSet('author-lang', lang).catch(() => { });
+            if (nextLanguage) {
+                localStorage.setItem('author-lang', nextLanguage);
+                persistSet('author-lang', nextLanguage).catch(() => { });
+            } else {
+                localStorage.removeItem('author-lang');
+            }
         }
-        return { language: lang };
+        return { language: nextLanguage };
     }),
 
     visualTheme: typeof window !== 'undefined' ? localStorage.getItem('author-visual') || null : null,
@@ -174,9 +183,6 @@ const store = create((set, get) => ({
         }
         return { writingBackground: nextBackground };
     }),
-
-    startTour: false,
-    setStartTour: (val) => set({ startTour: val }),
 
     // --- Toast ---
     toast: null,

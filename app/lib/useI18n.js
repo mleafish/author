@@ -3,9 +3,8 @@
 import { useAppStore } from '../store/useAppStore';
 import en from '../locales/en.json';
 import zh from '../locales/zh.json';
-import ru from '../locales/ru.json';
 
-const translations = { en, zh, ru };
+const translations = { en, zh };
 
 export function useI18n() {
     // Default to 'zh' if language is null initially

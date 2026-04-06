@@ -339,7 +339,10 @@
         "menuLoad": "读档",
         "menuImportWork": "导入作品",
         "menuHelp": "帮助与教程",
+        "menuDataFolder": "数据存储地址",
         "menuCommunity": "项目主页",
+        "openDataFolderSuccess": "已打开数据存储文件夹",
+        "openDataFolderFailed": "打开数据存储文件夹失败：{error}",
         "importWorkConfirm": "导入作品将替换当前所有章节。已识别 {count} 个章节，共 {words} 字。确认导入？",
         "importWorkSuccess": "成功导入 {count} 个章节",
         "importWorkFailed": "导入失败：{error}",
@@ -473,8 +476,7 @@
         "btnEndTour": "直接结束引导"
     },
     "help": {
-        "title": "帮助文档",
-        "btnRetour": "重新查看向导"
+        "title": "帮助文档"
     },
     "apiConfig": {
         "savedProfiles": "已保存的配置方案",
@@ -591,7 +593,15 @@
         "layoutOverlay": "覆盖",
         "layoutPush": "挤开",
         "layoutOverlayDesc": "侧栏浮在编辑区上方",
-        "layoutPushDesc": "侧栏挤开编辑区"
+        "layoutPushDesc": "侧栏挤开编辑区",
+        "dataStorageLabel": "数据存储位置",
+        "dataStoragePath": "当前路径",
+        "dataStorageChange": "更改位置",
+        "dataStorageChanging": "正在迁移数据...",
+        "dataStorageSuccess": "数据迁移完成，应用即将重启",
+        "dataStorageFailed": "数据迁移失败：{error}",
+        "dataStorageDesc": "更改后所有写作数据将自动迁移到新位置，应用会自动重启。",
+        "dataStorageOpen": "打开文件夹"
     },
     "bookInfo": {
         "intro": "这些信息帮助AI理解你的作品定位和风格，即使只填一两项也会大幅提升AI质量。",

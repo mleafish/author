@@ -36,7 +36,6 @@ const Editor = dynamic(() => import('./components/Editor'), {
 const SettingsPanel = dynamic(() => import('./components/SettingsPanel'), { ssr: false });
 const CategorySettingsModal = dynamic(() => import('./components/CategorySettingsModal'), { ssr: false });
 const HelpPanel = dynamic(() => import('./components/HelpPanel'), { ssr: false });
-const TourOverlay = dynamic(() => import('./components/TourOverlay'), { ssr: false });
 const AiSidebar = dynamic(() => import('./components/AiSidebar'), { ssr: false });
 const SnapshotManager = dynamic(() => import('./components/SnapshotManager'), { ssr: false });
 const WelcomeModal = dynamic(() => import('./components/WelcomeModal'), { ssr: false });
@@ -606,7 +605,6 @@ export default function Home() {
       <HelpPanel open={showHelp} onClose={() => setShowHelp(false)} />
 
       {/* ===== 首次引导 ===== */}
-      <TourOverlay onOpenHelp={() => setShowHelp(true)} />
       <WelcomeModal />
     </div>
   );
