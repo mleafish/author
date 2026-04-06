@@ -1,11 +1,14 @@
 
 > **本项目基于 [YuanShiJiLoong/author](https://github.com/YuanShiJiLoong/author) 修改而来，感谢原作者。**
 
+意外发现了这个ai写作工具，用下来挺好用，但还有些不喜欢的地方，我不会编程，但我会写作，所以这个项目全部由claude修改，我只想加入我需要的功能，然后分享出来，随缘更新！
+以下是原作者内容：
+
 # ✍️ Author — AI-Powered Creative Writing Platform
 
 > AI 驱动的网文创作平台 | AI-Powered Web Novel Writing Studio
 
-**Author** 是一款面向小说作者的 AI 辅助创作工具。它将专业的富文本编辑器、智能 AI 写作助手和完整的世界观管理系统整合在一起，为创作者提供一站式写作体验。
+**作者** 是一款面向小说作者的 AI 辅助创作工具。它将专业的富文本编辑器、智能 AI 写作助手和完整的世界观管理系统整合在一起，为创作者提供一站式写作体验。
 
 🌐 **在线体验**：[author-delta.vercel.app](https://author-delta.vercel.app)
 
