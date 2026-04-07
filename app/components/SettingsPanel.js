@@ -39,6 +39,7 @@ import SettingsTree from './SettingsTree';
 import { useI18n } from '../lib/useI18n';
 import SettingsItemEditor from './SettingsItemEditor';
 import { getModeRolePrompt } from '../lib/context-engine';
+import { DEFAULT_PREFIX, DEFAULT_SUFFIX } from '../lib/content-safety';
 import { downloadFile, downloadBlob } from '../lib/project-io';
 import {
     detectCategory, parseTextToFields, mapFieldsToContent,
@@ -1580,12 +1581,19 @@ function PreferencesForm() {
     // ---- 自定义提示词 ----
     const [customPrompt, setCustomPrompt] = useState('');
     const [promptSaveTimer, setPromptSaveTimer] = useState(null);
+    const [safetyPromptPrefix, setSafetyPromptPrefix] = useState('');
+    const [safetyPromptSuffix, setSafetyPromptSuffix] = useState('');
+    const [safetyPromptSaveTimer, setSafetyPromptSaveTimer] = useState(null);
     const writingMode = getWritingMode();
     const defaultPrompt = getModeRolePrompt(writingMode);
+    const defaultSafetyPromptPrefix = DEFAULT_PREFIX;
+    const defaultSafetyPromptSuffix = DEFAULT_SUFFIX;
 
     useEffect(() => {
         const settings = getProjectSettings();
         setCustomPrompt(settings.customPrompt || '');
+        setSafetyPromptPrefix(settings.safetyPromptPrefix || '');
+        setSafetyPromptSuffix(settings.safetyPromptSuffix || '');
     }, []);
 
     const handlePromptChange = (value) => {
@@ -1603,6 +1611,37 @@ function PreferencesForm() {
         setCustomPrompt('');
         const settings = getProjectSettings();
         settings.customPrompt = '';
+        saveProjectSettings(settings);
+    };
+
+    const handleSafetyPromptPrefixChange = (value) => {
+        setSafetyPromptPrefix(value);
+        if (safetyPromptSaveTimer) clearTimeout(safetyPromptSaveTimer);
+        const timer = setTimeout(() => {
+            const settings = getProjectSettings();
+            settings.safetyPromptPrefix = value;
+            saveProjectSettings(settings);
+        }, 500);
+        setSafetyPromptSaveTimer(timer);
+    };
+
+    const handleSafetyPromptSuffixChange = (value) => {
+        setSafetyPromptSuffix(value);
+        if (safetyPromptSaveTimer) clearTimeout(safetyPromptSaveTimer);
+        const timer = setTimeout(() => {
+            const settings = getProjectSettings();
+            settings.safetyPromptSuffix = value;
+            saveProjectSettings(settings);
+        }, 500);
+        setSafetyPromptSaveTimer(timer);
+    };
+
+    const handleResetSafetyPrompt = () => {
+        setSafetyPromptPrefix('');
+        setSafetyPromptSuffix('');
+        const settings = getProjectSettings();
+        settings.safetyPromptPrefix = '';
+        settings.safetyPromptSuffix = '';
         saveProjectSettings(settings);
     };
 
@@ -1834,6 +1873,89 @@ function PreferencesForm() {
                     </span>
                     <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
                         {customPrompt.length} 字
+                    </span>
+                </div>
+            </div>
+
+            <div style={{ marginBottom: 24 }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+                    <label style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)' }}>
+                        <Shield size={14} style={{ marginRight: 4 }} /> {t('preferences.safetyPromptLabel')}
+                    </label>
+                    {(safetyPromptPrefix || safetyPromptSuffix) && (
+                        <button
+                            onClick={handleResetSafetyPrompt}
+                            style={{
+                                background: 'none', border: '1px solid var(--border-light)',
+                                borderRadius: 'var(--radius-sm)', padding: '3px 10px',
+                                cursor: 'pointer', fontSize: 11, color: 'var(--text-muted)',
+                                transition: 'all 0.15s',
+                            }}
+                            onMouseEnter={e => e.currentTarget.style.color = 'var(--text-primary)'}
+                            onMouseLeave={e => e.currentTarget.style.color = 'var(--text-muted)'}
+                        >
+                            ↩ {t('preferences.resetDefault')}
+                        </button>
+                    )}
+                </div>
+                <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 12, lineHeight: 1.5 }}>
+                    {t('preferences.safetyPromptDesc')}
+                </div>
+
+                <div style={{ display: 'grid', gap: 12 }}>
+                    <div>
+                        <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 8 }}>
+                            {t('preferences.safetyPromptPrefixLabel')}
+                        </div>
+                        <textarea
+                            value={safetyPromptPrefix}
+                            onChange={e => handleSafetyPromptPrefixChange(e.target.value)}
+                            placeholder={defaultSafetyPromptPrefix}
+                            rows={8}
+                            style={{
+                                width: '100%', padding: '12px 14px',
+                                background: 'var(--bg-primary)', border: '1px solid var(--border-light)',
+                                borderRadius: 'var(--radius-md)', color: 'var(--text-primary)',
+                                fontSize: 13, lineHeight: 1.6, resize: 'vertical',
+                                fontFamily: 'inherit', outline: 'none', transition: 'border 0.15s',
+                                minHeight: 120, maxHeight: 400,
+                            }}
+                            onFocus={e => e.currentTarget.style.borderColor = 'var(--accent)'}
+                            onBlur={e => e.currentTarget.style.borderColor = 'var(--border-light)'}
+                        />
+                    </div>
+
+                    <div>
+                        <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 8 }}>
+                            {t('preferences.safetyPromptSuffixLabel')}
+                        </div>
+                        <textarea
+                            value={safetyPromptSuffix}
+                            onChange={e => handleSafetyPromptSuffixChange(e.target.value)}
+                            placeholder={defaultSafetyPromptSuffix}
+                            rows={4}
+                            style={{
+                                width: '100%', padding: '12px 14px',
+                                background: 'var(--bg-primary)', border: '1px solid var(--border-light)',
+                                borderRadius: 'var(--radius-md)', color: 'var(--text-primary)',
+                                fontSize: 13, lineHeight: 1.6, resize: 'vertical',
+                                fontFamily: 'inherit', outline: 'none', transition: 'border 0.15s',
+                                minHeight: 88, maxHeight: 260,
+                            }}
+                            onFocus={e => e.currentTarget.style.borderColor = 'var(--accent)'}
+                            onBlur={e => e.currentTarget.style.borderColor = 'var(--border-light)'}
+                        />
+                    </div>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 6 }}>
+                    <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
+                        {(safetyPromptPrefix || safetyPromptSuffix)
+                            ? <><CheckCircle2 size={12} style={{ marginRight: 4, color: 'var(--success, #22c55e)' }} />{t('preferences.safetyPromptCustomStatus')}</>
+                            : <><Shield size={12} style={{ marginRight: 4 }} />{t('preferences.safetyPromptDefaultStatus')}</>}
+                    </span>
+                    <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
+                        {(safetyPromptPrefix.length + safetyPromptSuffix.length)} 字
                     </span>
                 </div>
             </div>

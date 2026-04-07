@@ -601,7 +601,16 @@
         "dataStorageSuccess": "数据迁移完成，应用即将重启",
         "dataStorageFailed": "数据迁移失败：{error}",
         "dataStorageDesc": "更改后所有写作数据将自动迁移到新位置，应用会自动重启。",
-        "dataStorageOpen": "打开文件夹"
+        "dataStorageOpen": "打开文件夹",
+        "safetyPromptLabel": "底层提示词",
+        "resetDefault": "恢复默认",
+        "safetyPromptDesc": "编辑包裹系统提示词的前后置底层提示词。留空时使用内置默认内容。",
+        "safetyPromptPrefixLabel": "前置提示词",
+        "safetyPromptPrefixPlaceholder": "留空时使用内置前置底层提示词",
+        "safetyPromptSuffixLabel": "后置提示词",
+        "safetyPromptSuffixPlaceholder": "留空时使用内置后置底层提示词",
+        "safetyPromptCustomStatus": "已使用自定义底层提示词",
+        "safetyPromptDefaultStatus": "当前使用内置底层提示词"
     },
     "bookInfo": {
         "intro": "这些信息帮助AI理解你的作品定位和风格，即使只填一两项也会大幅提升AI质量。",

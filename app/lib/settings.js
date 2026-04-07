@@ -68,6 +68,10 @@ const DEFAULT_SETTINGS = {
     // 用户自定义系统提示词（为空时使用内置默认提示词）
     customPrompt: '',
 
+    // 底层安全提示词（为空时使用内置默认提示词）
+    safetyPromptPrefix: '',
+    safetyPromptSuffix: '',
+
     // API 配置 — 用户自己填入 API Key
     apiConfig: {
         provider: 'custom',   // 供应商标识

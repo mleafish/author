@@ -601,7 +601,16 @@
     "dataStorageSuccess": "Data migrated successfully, app will restart",
     "dataStorageFailed": "Data migration failed: {error}",
     "dataStorageDesc": "All writing data will be automatically moved to the new location. The app will restart.",
-    "dataStorageOpen": "Open Folder"
+    "dataStorageOpen": "Open Folder",
+    "safetyPromptLabel": "Base Prompt Layer",
+    "resetDefault": "Reset Default",
+    "safetyPromptDesc": "Edit the low-level prefix and suffix prompts that wrap the system prompt. Leave blank to use the built-in defaults.",
+    "safetyPromptPrefixLabel": "Prefix Prompt",
+    "safetyPromptPrefixPlaceholder": "Leave blank to use the built-in prefix prompt",
+    "safetyPromptSuffixLabel": "Suffix Prompt",
+    "safetyPromptSuffixPlaceholder": "Leave blank to use the built-in suffix prompt",
+    "safetyPromptCustomStatus": "Custom base prompts active",
+    "safetyPromptDefaultStatus": "Using built-in base prompts"
   },
   "bookInfo": {
     "intro": "This information helps AI understand your work's direction and style. Even filling in just one or two fields will significantly improve AI quality.",
