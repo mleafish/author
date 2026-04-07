@@ -4,9 +4,14 @@ const { spawn } = require('child_process');
 const http = require('http');
 const net = require('net');
 const fs = require('fs');
+const { getServerWaitConfig, shouldLoadEnvFile } = require('./startup-config');
 
 // 加载 .env.local（轻量实现，无需 dotenv 依赖）
 (function loadEnvFile() {
+    if (!shouldLoadEnvFile({ isPackaged: app.isPackaged })) {
+        return;
+    }
+
     const envPaths = [
         path.join(__dirname, '..', '.env.local'),
         path.join(__dirname, '..', '.env'),
@@ -427,11 +432,12 @@ async function tryKillPortProcess(port) {
     }
 }
 
-function waitForServer(port, maxRetries = 30) {
+function waitForServer(port) {
+    const { maxRetries, retryDelayMs, requestTimeoutMs } = getServerWaitConfig({ isPackaged: app.isPackaged });
+
     return new Promise((resolve) => {
         let retries = 0;
         const check = () => {
-            // 如果子进程已经崩溃，立即返回失败
             if (serverCrashed) {
                 log(`[waitForServer] Server process already crashed, aborting wait`);
                 resolve(false);
@@ -442,6 +448,7 @@ function waitForServer(port, maxRetries = 30) {
                 updateSplashText(`正在启动服务... (${retries}/${maxRetries})`);
             }
             const req = http.get(`http://localhost:${port}`, (res) => {
+                res.resume();
                 resolve(true);
             });
             req.on('error', () => {
@@ -450,17 +457,17 @@ function waitForServer(port, maxRetries = 30) {
                     log(`[waitForServer] Timed out after ${maxRetries} retries`);
                     resolve(false);
                 } else {
-                    setTimeout(check, 1000);
+                    setTimeout(check, retryDelayMs);
                 }
             });
-            req.setTimeout(3000, () => {
+            req.setTimeout(requestTimeoutMs, () => {
                 req.destroy();
                 retries++;
                 if (retries >= maxRetries) {
                     log(`[waitForServer] Timed out after ${maxRetries} retries`);
                     resolve(false);
                 } else {
-                    setTimeout(check, 1000);
+                    setTimeout(check, retryDelayMs);
                 }
             });
         };
@@ -507,20 +514,23 @@ function startNextServer() {
             return;
         }
 
-        // 尝试释放被占用的端口
-        await tryKillPortProcess(BASE_PORT);
+        if (isPackaged) {
+            actualPort = BASE_PORT;
+            log(`Using packaged base port: ${actualPort}`);
+        } else {
+            await tryKillPortProcess(BASE_PORT);
 
-        // 查找可用端口
-        actualPort = await findAvailablePort(BASE_PORT);
-        if (!actualPort) {
-            const msg = `端口 ${BASE_PORT}-${BASE_PORT + 9} 全部被占用，无法启动服务器。`;
-            log('ERROR: ' + msg);
-            dialog.showErrorBox('Author 启动失败', msg);
-            resolve(false);
-            return;
+            actualPort = await findAvailablePort(BASE_PORT);
+            if (!actualPort) {
+                const msg = `端口 ${BASE_PORT}-${BASE_PORT + 9} 全部被占用，无法启动服务器。`;
+                log('ERROR: ' + msg);
+                dialog.showErrorBox('Author 启动失败', msg);
+                resolve(false);
+                return;
+            }
+
+            log(`Using port: ${actualPort}`);
         }
-
-        log(`Using port: ${actualPort}`);
 
         // ===== 策略1：尝试子进程模式（5 秒超时预检） =====
         const childProcessOk = await tryChildProcessMode(standaloneDir, serverPath);

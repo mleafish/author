@@ -4,6 +4,7 @@ import "./globals.css";
 import { useEffect, useState } from "react";
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
+import { shouldEnableTelemetry } from './lib/desktop-runtime';
 
 // 内联脚本：在 HTML 解析阶段同步读取 theme，避免 hydration 不匹配和闪烁
 const themeInitScript = `
@@ -38,6 +39,7 @@ const themeInitScript = `
 
 export default function RootLayout({ children }) {
   const [mounted, setMounted] = useState(false);
+  const telemetryEnabled = shouldEnableTelemetry();
 
   useEffect(() => {
     setMounted(true);
@@ -56,8 +58,8 @@ export default function RootLayout({ children }) {
       </head>
       <body suppressHydrationWarning>
         {children}
-        <Analytics />
-        <SpeedInsights />
+        {telemetryEnabled ? <Analytics /> : null}
+        {telemetryEnabled ? <SpeedInsights /> : null}
       </body>
     </html>
   );

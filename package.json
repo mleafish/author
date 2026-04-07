@@ -1,12 +1,13 @@
 {
   "name": "author-app",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "private": true,
   "main": "electron/main.js",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "test": "node --test tests/*.test.*",
     "lint": "eslint",
     "electron:dev": "npm run dev & npx electron . --dev",
     "electron:build": "node -e \"const fs=require('fs'); const remove=(d)=>{try{if(fs.existsSync(d))fs.rmSync(d,{recursive:true,force:true})}catch(e){console.warn('[clean]',d,e.message)}}; ['.next','dist'].forEach(remove)\" && npx next build && npx electron-builder --win",
@@ -125,11 +126,20 @@
         "from": "public",
         "to": "standalone/public",
         "filter": [
-          "**/*"
+          "**/*",
+          "!katex/README.md",
+          "!katex/katex.js",
+          "!katex/katex.mjs",
+          "!katex/katex.min.js",
+          "!katex/contrib/**/*"
         ]
       }
     ],
     "afterPack": "./afterPack.js",
+    "electronLanguages": [
+      "en-US",
+      "zh-CN"
+    ],
     "win": {
       "target": [
         {

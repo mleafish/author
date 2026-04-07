@@ -16,7 +16,7 @@ import {
   migrateGlobalChapters,
   saveChapters,
 } from './lib/storage';
-import { initPersistence } from './lib/persistence';
+import { getDeferredBootstrapDelay } from './lib/desktop-runtime';
 import { buildContext, compileSystemPrompt, compileUserPrompt, getContextItems, estimateTokens } from './lib/context-engine';
 import { addTokenRecord } from './lib/token-stats';
 import { getProjectSettings, WRITING_MODES, getWritingMode, addSettingsNode, updateSettingsNode, deleteSettingsNode, getSettingsNodes, getActiveWorkId } from './lib/settings';
@@ -197,36 +197,52 @@ export default function Home() {
 
   // 初始化数据
   useEffect(() => {
-    const initData = async () => {
-      // 初始化 Firebase（如果已配置）
-      await initPersistence();
+    let cancelled = false;
 
+    const initCriticalData = async () => {
       const workId = getActiveWorkId();
+      if (cancelled) return;
+
       if (workId) {
         setActiveWorkIdStore(workId);
-        // 一次性迁移旧全局章节
         await migrateGlobalChapters(workId);
+        if (cancelled) return;
       }
+
       await loadChaptersForWork(workId);
+      if (cancelled) return;
 
       const savedTheme = localStorage.getItem('author-theme') || 'light';
       setTheme(savedTheme);
-      // 恢复视觉主题（经典纸张 / 现代通透）
       const savedVisual = localStorage.getItem('author-visual');
       if (savedVisual) {
         document.documentElement.setAttribute('data-visual', savedVisual);
       }
       setWritingMode(getWritingMode());
 
-      // 加载会话数据
-      let store = await loadSessionStore();
-      if (store.sessions.length === 0) {
-        store = createSession(store);
-      }
-      setSessionStore(store);
+      setTimeout(async () => {
+        if (cancelled) return;
+        await initPersistence();
+        if (cancelled) return;
+
+        let store = await loadSessionStore();
+        if (cancelled) return;
+
+        if (store.sessions.length === 0) {
+          store = createSession(store);
+        }
+        if (!cancelled) {
+          setSessionStore(store);
+        }
+      }, getDeferredBootstrapDelay());
     };
-    initData();
-  }, []);
+
+    initCriticalData();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [loadChaptersForWork, setActiveWorkIdStore, setSessionStore, setTheme, setWritingMode]);
 
   // 切换作品时重新加载章节
   const prevWorkIdRef = useRef(activeWorkId);

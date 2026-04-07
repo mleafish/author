@@ -5,21 +5,25 @@
  */
 const path = require('path');
 const fs = require('fs');
+const { shouldCopyStandaloneEntry } = require('./electron/package-filters');
 
-function copyDirSync(src, dest) {
+function copyDirSync(src, dest, baseSrc = src) {
     if (!fs.existsSync(src)) return;
     fs.mkdirSync(dest, { recursive: true });
     const entries = fs.readdirSync(src, { withFileTypes: true });
     for (const entry of entries) {
         const srcPath = path.join(src, entry.name);
         const destPath = path.join(dest, entry.name);
+        const relativePath = path.relative(baseSrc, srcPath);
+        if (!shouldCopyStandaloneEntry(relativePath)) {
+            continue;
+        }
         if (entry.isDirectory()) {
-            copyDirSync(srcPath, destPath);
+            copyDirSync(srcPath, destPath, baseSrc);
         } else if (entry.isSymbolicLink()) {
-            // Resolve symlinks and copy the actual file/dir
             const realPath = fs.realpathSync(srcPath);
             if (fs.statSync(realPath).isDirectory()) {
-                copyDirSync(realPath, destPath);
+                copyDirSync(realPath, destPath, baseSrc);
             } else {
                 fs.copyFileSync(realPath, destPath);
             }
