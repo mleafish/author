@@ -6,7 +6,7 @@
 //   2. 服务端文件系统 /api/storage（Docker/自建部署模式）
 // 多用户隔离：首次访问自动生成 userId 并存入 cookie
 
-import { get, set, del } from 'idb-keyval';
+import { get, set, del, clear } from 'idb-keyval';
 
 // ==================== 用户ID管理 ====================
 
@@ -203,6 +203,75 @@ async function browserDel(key) {
 }
 
 // ==================== 便捷方法 ====================
+
+/**
+ * 清除浏览器端所有缓存（用于加载存档后刷新）
+ */
+export async function clearBrowserCache() {
+    if (typeof window === 'undefined') return;
+    // 保留初始化关键 key，避免 reload 后 store 状态丢失
+    const PRESERVE = [
+        'author-theme', 'author-lang', 'author-visual',
+        'author-active-save', 'author-active-save-display',
+    ];
+    const preserved = {};
+    for (const k of PRESERVE) {
+        const v = localStorage.getItem(k);
+        if (v !== null) preserved[k] = v;
+    }
+    await clear();
+    const keysToRemove = [];
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key?.startsWith('author-')) keysToRemove.push(key);
+    }
+    keysToRemove.forEach(k => localStorage.removeItem(k));
+    for (const [k, v] of Object.entries(preserved)) localStorage.setItem(k, v);
+}
+
+/**
+ * 用存档数据直接覆写浏览器缓存（替代 clearBrowserCache + reload 的方案）
+ * @param {Object} browserData - { key: value } 形式，key 不含 .json 后缀
+ */
+export async function restoreBrowserFromSaveData(browserData) {
+    if (typeof window === 'undefined') return;
+
+    // 1. 清空 IndexedDB
+    await clear();
+
+    // 2. 清除所有 author-* localStorage 键
+    const keysToRemove = [];
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key?.startsWith('author-')) keysToRemove.push(key);
+    }
+    keysToRemove.forEach(k => localStorage.removeItem(k));
+
+    // 3. 保留主题/语言等 UI 配置（它们不在存档里）
+    // 这些在上面已被清除，但 browserData 中如果有就写入，没有就用默认
+
+    // 4. 把存档数据写入对应的浏览器存储
+    for (const [key, value] of Object.entries(browserData)) {
+        if (LOCALSTORAGE_KEYS.has(key)) {
+            localStorage.setItem(key, typeof value === 'string' ? value : JSON.stringify(value));
+        } else {
+            await set(key, value);
+        }
+    }
+
+    // 5. 确保 author-active-work 存在（如果存档中缺失，从键名推断）
+    if (!localStorage.getItem('author-active-work')) {
+        const workId = Object.keys(browserData)
+            .filter(k => k.startsWith('author-chapters-'))
+            .map(k => k.replace('author-chapters-', ''))[0]
+            || Object.keys(browserData)
+                .filter(k => k.startsWith('author-settings-nodes-'))
+                .map(k => k.replace('author-settings-nodes-', ''))[0];
+        if (workId) {
+            localStorage.setItem('author-active-work', workId);
+        }
+    }
+}
 
 /**
  * 同步读取 localStorage（仅用于需要同步值的场景，如初始化 zustand store）

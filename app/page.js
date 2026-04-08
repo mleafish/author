@@ -23,8 +23,6 @@ import { getProjectSettings, WRITING_MODES, getWritingMode, addSettingsNode, upd
 import {
   loadSessionStore, createSession, getActiveSession,
 } from './lib/chat-sessions';
-import { exportProject, importProject } from './lib/project-io';
-import { createSnapshot } from './lib/snapshots';
 // 动态导入编辑器和设定集面板及侧边栏（避免 SSR 问题）
 const Sidebar = dynamic(() => import('./components/Sidebar'), { ssr: false });
 const Editor = dynamic(() => import('./components/Editor'), {
@@ -37,10 +35,14 @@ const SettingsPanel = dynamic(() => import('./components/SettingsPanel'), { ssr:
 const CategorySettingsModal = dynamic(() => import('./components/CategorySettingsModal'), { ssr: false });
 const HelpPanel = dynamic(() => import('./components/HelpPanel'), { ssr: false });
 const AiSidebar = dynamic(() => import('./components/AiSidebar'), { ssr: false });
-const SnapshotManager = dynamic(() => import('./components/SnapshotManager'), { ssr: false });
+const SaveManager = dynamic(() => import('./components/SaveManager'), { ssr: false });
 const WelcomeModal = dynamic(() => import('./components/WelcomeModal'), { ssr: false });
 const UpdateBanner = dynamic(() => import('./components/UpdateBanner'), { ssr: false });
 const BookInfoPanel = dynamic(() => import('./components/BookInfoPanel'), { ssr: false });
+
+function isEditableChapter(chapter) {
+  return !!(chapter && typeof chapter === 'object' && chapter.id && chapter.type !== 'volume');
+}
 
 export default function Home() {
   const {
@@ -51,7 +53,6 @@ export default function Home() {
     aiSidebarOpen, setAiSidebarOpen, toggleAiSidebar,
     sidebarPushMode, aiSidebarPushMode, _hydrateSidebarModes,
     showSettings, setShowSettings,
-    showSnapshots, setShowSnapshots,
     theme, setTheme,
     writingMode, setWritingMode,
     toast, showToast,
@@ -190,17 +191,22 @@ export default function Home() {
       setChapters([first]);
       setActiveChapterId(first.id);
     } else {
+      const realChapters = saved.filter(isEditableChapter);
       setChapters(saved);
       const nextActiveChapterId = [
         preferredChapterId,
         useAppStore.getState().activeChapterId,
-        saved[0]?.id,
-      ].find((id) => id && saved.some((ch) => ch.id === id)) || null;
+        realChapters[0]?.id,
+      ].find((id) => id && realChapters.some((ch) => ch.id === id)) || null;
       setActiveChapterId(nextActiveChapterId);
     }
   }, [t, setChapters, setActiveChapterId]);
 
-  // 初始化数据
+  // 使用 ref 持有最新的 loadChaptersForWork，避免 init effect 因引用变化反复重启
+  const loadChaptersRef = useRef(loadChaptersForWork);
+  useEffect(() => { loadChaptersRef.current = loadChaptersForWork; }, [loadChaptersForWork]);
+
+  // 初始化数据（仅运行一次）
   useEffect(() => {
     let cancelled = false;
 
@@ -214,7 +220,7 @@ export default function Home() {
         if (cancelled) return;
       }
 
-      await loadChaptersForWork(workId, useAppStore.getState().activeChapterId);
+      await loadChaptersRef.current(workId, useAppStore.getState().activeChapterId);
       if (cancelled) return;
 
       const savedTheme = localStorage.getItem('author-theme') || 'light';
@@ -229,6 +235,16 @@ export default function Home() {
         if (cancelled) return;
         await initPersistence();
         if (cancelled) return;
+
+        // 首次启动自动创建默认存档
+        if (window.electronAPI?.createSave && !localStorage.getItem('author-active-save')) {
+          try {
+            const saveResult = await window.electronAPI.createSave('默认存档');
+            if (saveResult?.success) {
+              useAppStore.getState().setActiveSave(saveResult.fileName, '默认存档');
+            }
+          } catch { /* ignore */ }
+        }
 
         let store = await loadSessionStore();
         if (cancelled) return;
@@ -247,15 +263,27 @@ export default function Home() {
     return () => {
       cancelled = true;
     };
-  }, [loadChaptersForWork, setActiveWorkIdStore, setSessionStore, setTheme, setWritingMode]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [setActiveWorkIdStore, setSessionStore, setTheme, setWritingMode]);
+
+  // 自动保存到活跃存档（每60秒）
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.electronAPI?.updateSave) return;
+    const timer = setInterval(() => {
+      const { activeSaveName } = useAppStore.getState();
+      if (!activeSaveName) return;
+      window.electronAPI.updateSave(activeSaveName).catch(() => {});
+    }, 60000);
+    return () => clearInterval(timer);
+  }, []);
 
   // 切换作品时重新加载章节
   const prevWorkIdRef = useRef(activeWorkId);
   useEffect(() => {
     if (prevWorkIdRef.current === activeWorkId) return;
     prevWorkIdRef.current = activeWorkId;
-    loadChaptersForWork(activeWorkId, useAppStore.getState().activeChapterId);
-  }, [activeWorkId, loadChaptersForWork]);
+    loadChaptersRef.current(activeWorkId, useAppStore.getState().activeChapterId);
+  }, [activeWorkId]);
 
   // 章节指纹 —— 当章节改名或拖动排序时会变化，触发上下文列表重建
   const chaptersFingerprint = useMemo(
@@ -316,29 +344,17 @@ export default function Home() {
     loadContext();
   }, [activeChapterId, settingsFingerprint, settingsVersion, chatHistory.length, chaptersFingerprint]);
 
-  // 定时自动存档 (每 15 分钟，可在快照页面关闭)
-  useEffect(() => {
-    const isAutoEnabled = () => {
-      try { return localStorage.getItem('author-auto-snapshot') !== 'false'; } catch { return true; }
-    };
-
-    // 首次加载后延迟 5 分钟做一次初始存档，之后每 15 分钟做一次
-    const initialTimer = setTimeout(() => {
-      if (isAutoEnabled()) createSnapshot(t('page.autoSnapshot'), 'auto').catch(e => console.error(t('page.autoSnapshotFail'), e));
-    }, 5 * 60 * 1000);
-
-    const intervalTimer = setInterval(() => {
-      if (isAutoEnabled()) createSnapshot(t('page.autoSnapshot'), 'auto').catch(e => console.error(t('page.autoSnapshotFail'), e));
-    }, 15 * 60 * 1000);
-
-    return () => {
-      clearTimeout(initialTimer);
-      clearInterval(intervalTimer);
-    };
-  }, []);
 
   // 当前活跃章节
-  const activeChapter = Array.isArray(chapters) ? chapters.find(ch => ch.id === activeChapterId) : null;
+  const activeChapter = Array.isArray(chapters) ? chapters.find(ch => ch.id === activeChapterId && isEditableChapter(ch)) : null;
+
+  useEffect(() => {
+    if (!Array.isArray(chapters) || chapters.length === 0) return;
+    const realChapters = chapters.filter(isEditableChapter);
+    if (realChapters.length === 0) return;
+    if (activeChapter) return;
+    setActiveChapterId(realChapters[0].id);
+  }, [chapters, activeChapter, setActiveChapterId]);
 
   const handleEditorUpdate = useCallback(async ({ html, wordCount }) => {
     if (!activeChapterId) return;
@@ -620,7 +636,7 @@ export default function Home() {
       <SettingsPanel />
       <CategorySettingsModal />
       <BookInfoPanel />
-      <SnapshotManager />
+      <SaveManager />
 
       {/* ===== 帮助文档 ===== */}
       <HelpPanel open={showHelp} onClose={() => setShowHelp(false)} />

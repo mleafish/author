@@ -203,6 +203,264 @@ ipcMain.handle('migrate-data-path', async (event, newPath) => {
     }
 });
 
+// ==================== 存档管理（单 JSON 文件） ====================
+
+const SAVES_DIR_NAME = '_saves';
+
+function getSavesDir() {
+    const dir = path.join(getCurrentDataDir(), SAVES_DIR_NAME);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    return dir;
+}
+
+function findUserDir() {
+    const dataDir = getCurrentDataDir();
+    if (!fs.existsSync(dataDir)) return null;
+    const entries = fs.readdirSync(dataDir, { withFileTypes: true });
+    const d = entries.find(e => e.isDirectory() && !e.name.startsWith('_'));
+    return d ? path.join(dataDir, d.name) : null;
+}
+
+/** 把用户数据目录中所有 .json 打包成一个对象 */
+function packUserData(userDir) {
+    const data = {};
+    const files = fs.readdirSync(userDir).filter(f => f.endsWith('.json'));
+    for (const f of files) {
+        try {
+            const raw = fs.readFileSync(path.join(userDir, f), 'utf-8');
+            data[f] = JSON.parse(raw);
+        } catch { /* skip corrupt */ }
+    }
+    return data;
+}
+
+/** 把打包数据写回用户目录（先清空） */
+function unpackUserData(userDir, data) {
+    // 清空
+    for (const f of fs.readdirSync(userDir)) {
+        const fp = path.join(userDir, f);
+        if (fs.statSync(fp).isFile()) fs.unlinkSync(fp);
+    }
+    // 写入
+    for (const [filename, value] of Object.entries(data)) {
+        if (filename === '_meta') continue;
+        fs.writeFileSync(path.join(userDir, filename), JSON.stringify(value, null, 2), 'utf-8');
+    }
+}
+
+function sanitizeSaveName(name) {
+    return name.replace(/[<>:"/\\|?*]/g, '_').replace(/\.+$/g, '').trim().slice(0, 100);
+}
+
+// 列出所有存档
+ipcMain.handle('list-saves', async () => {
+    try {
+        const savesDir = getSavesDir();
+        const files = fs.readdirSync(savesDir).filter(f => f.endsWith('.json'));
+        const saves = [];
+        for (const f of files) {
+            try {
+                const raw = fs.readFileSync(path.join(savesDir, f), 'utf-8');
+                const parsed = JSON.parse(raw);
+                const meta = parsed._meta || {};
+                saves.push({
+                    fileName: f,
+                    name: meta.name || f.replace(/\.json$/, ''),
+                    createdAt: meta.createdAt || null,
+                    fileCount: Object.keys(parsed).filter(k => k !== '_meta').length,
+                });
+            } catch { /* skip corrupt */ }
+        }
+        saves.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+        return { success: true, saves };
+    } catch (error) {
+        log(`[ListSaves] Error: ${error.message}`);
+        return { success: false, error: error.message };
+    }
+});
+
+// 创建存档
+ipcMain.handle('create-save', async (event, name) => {
+    try {
+        const userDir = findUserDir();
+        if (!userDir) return { success: false, error: 'No user data found' };
+        const displayName = name || new Date().toLocaleString();
+        const safeName = sanitizeSaveName(displayName);
+        if (!safeName) return { success: false, error: 'Invalid save name' };
+        const savePath = path.join(getSavesDir(), safeName + '.json');
+        if (fs.existsSync(savePath)) return { success: false, error: 'Save already exists' };
+        const data = packUserData(userDir);
+        data._meta = { name: displayName, createdAt: new Date().toISOString() };
+        fs.writeFileSync(savePath, JSON.stringify(data), 'utf-8');
+        log(`[CreateSave] Created: ${safeName}.json`);
+        return { success: true, name: safeName, fileName: safeName + '.json' };
+    } catch (error) {
+        log(`[CreateSave] Error: ${error.message}`);
+        return { success: false, error: error.message };
+    }
+});
+
+// 更新存档（覆写已有存档）
+ipcMain.handle('update-save', async (event, fileName) => {
+    try {
+        const userDir = findUserDir();
+        if (!userDir) return { success: false, error: 'No user data found' };
+        if (!fileName || fileName.includes('..')) return { success: false, error: 'Invalid' };
+        const savePath = path.join(getSavesDir(), fileName);
+        if (!fs.existsSync(savePath)) return { success: false, error: 'Save not found' };
+        let meta = {};
+        try { meta = JSON.parse(fs.readFileSync(savePath, 'utf-8'))._meta || {}; } catch {}
+        const data = packUserData(userDir);
+        data._meta = { ...meta, updatedAt: new Date().toISOString() };
+        fs.writeFileSync(savePath, JSON.stringify(data), 'utf-8');
+        return { success: true };
+    } catch (error) {
+        log(`[UpdateSave] Error: ${error.message}`);
+        return { success: false, error: error.message };
+    }
+});
+
+// 加载存档
+ipcMain.handle('load-save', async (event, fileName) => {
+    try {
+        const userDir = findUserDir();
+        if (!userDir) return { success: false, error: 'No user data found' };
+        const savePath = path.join(getSavesDir(), fileName);
+        if (!fs.existsSync(savePath)) return { success: false, error: 'Save not found' };
+        const data = JSON.parse(fs.readFileSync(savePath, 'utf-8'));
+        unpackUserData(userDir, data);
+        log(`[LoadSave] Loaded: ${fileName}`);
+        // 返回完整存档数据，供前端直接写入浏览器存储
+        const browserData = {};
+        for (const [filename, value] of Object.entries(data)) {
+            if (filename === '_meta') continue;
+            const key = filename.replace(/\.json$/, '');
+            browserData[key] = value;
+        }
+        return { success: true, browserData };
+    } catch (error) {
+        log(`[LoadSave] Error: ${error.message}`);
+        return { success: false, error: error.message };
+    }
+});
+
+// 导出存档（另存为 JSON 文件）
+ipcMain.handle('export-save', async () => {
+    try {
+        const userDir = findUserDir();
+        if (!userDir) return { success: false, error: 'No user data found' };
+        const now = new Date();
+        const dateStr = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}`;
+        const defaultName = `Author_存档_${dateStr}.json`;
+        const result = await dialog.showSaveDialog(mainWindow, {
+            title: '导出存档',
+            defaultPath: defaultName,
+            filters: [{ name: 'JSON', extensions: ['json'] }],
+        });
+        if (result.canceled || !result.filePath) return { success: false, canceled: true };
+        const data = packUserData(userDir);
+        data._meta = { name: path.basename(result.filePath, '.json'), createdAt: now.toISOString(), app: 'Author' };
+        fs.writeFileSync(result.filePath, JSON.stringify(data), 'utf-8');
+        log(`[ExportSave] Exported to: ${result.filePath}`);
+        return { success: true, path: result.filePath };
+    } catch (error) {
+        log(`[ExportSave] Error: ${error.message}`);
+        return { success: false, error: error.message };
+    }
+});
+
+// 导入存档（选择 JSON 文件，导入并加载）
+ipcMain.handle('import-save', async () => {
+    try {
+        const result = await dialog.showOpenDialog(mainWindow, {
+            title: '选择存档文件',
+            filters: [{ name: 'JSON', extensions: ['json'] }],
+            properties: ['openFile'],
+        });
+        if (result.canceled || !result.filePaths?.[0]) return { success: false, canceled: true };
+        const filePath = result.filePaths[0];
+        const raw = fs.readFileSync(filePath, 'utf-8');
+        const data = JSON.parse(raw);
+        if (!data || typeof data !== 'object') return { success: false, error: 'Invalid save file' };
+
+        // Load into active user dir
+        const userDir = findUserDir();
+        if (userDir) {
+            unpackUserData(userDir, data);
+        }
+
+        // Also save a copy in _saves/
+        const baseName = path.basename(filePath, '.json');
+        const safeName = sanitizeSaveName(baseName);
+        const savesDir = getSavesDir();
+        let destName = safeName;
+        let counter = 1;
+        while (fs.existsSync(path.join(savesDir, destName + '.json'))) {
+            destName = `${safeName}_${counter++}`;
+        }
+        if (!data._meta) data._meta = { name: baseName, createdAt: new Date().toISOString() };
+        fs.writeFileSync(path.join(savesDir, destName + '.json'), JSON.stringify(data), 'utf-8');
+
+        log(`[ImportSave] Imported and loaded: ${destName}`);
+        const browserData = {};
+        for (const [filename, value] of Object.entries(data)) {
+            if (filename === '_meta') continue;
+            const key = filename.replace(/\.json$/, '');
+            browserData[key] = value;
+        }
+        return { success: true, name: destName, loaded: true, browserData };
+    } catch (error) {
+        log(`[ImportSave] Error: ${error.message}`);
+        return { success: false, error: error.message };
+    }
+});
+
+// 删除存档
+ipcMain.handle('delete-save', async (event, fileName) => {
+    try {
+        if (!fileName || fileName.includes('..')) return { success: false, error: 'Invalid' };
+        const savePath = path.join(getSavesDir(), fileName);
+        if (!fs.existsSync(savePath)) return { success: false, error: 'Save not found' };
+        fs.unlinkSync(savePath);
+        log(`[DeleteSave] Deleted: ${fileName}`);
+        return { success: true };
+    } catch (error) {
+        log(`[DeleteSave] Error: ${error.message}`);
+        return { success: false, error: error.message };
+    }
+});
+
+// 重命名存档
+ipcMain.handle('rename-save', async (event, oldFileName, newName) => {
+    try {
+        if (!oldFileName || !newName) return { success: false, error: 'Invalid' };
+        const safeName = sanitizeSaveName(newName);
+        if (!safeName) return { success: false, error: 'Invalid new name' };
+        const savesDir = getSavesDir();
+        const oldPath = path.join(savesDir, oldFileName);
+        const newPath = path.join(savesDir, safeName + '.json');
+        if (!fs.existsSync(oldPath)) return { success: false, error: 'Save not found' };
+        if (fs.existsSync(newPath)) return { success: false, error: 'Name already exists' };
+        // Update _meta inside the file
+        const data = JSON.parse(fs.readFileSync(oldPath, 'utf-8'));
+        if (!data._meta) data._meta = {};
+        data._meta.name = newName;
+        fs.writeFileSync(newPath, JSON.stringify(data), 'utf-8');
+        fs.unlinkSync(oldPath);
+        log(`[RenameSave] ${oldFileName} -> ${safeName}.json`);
+        return { success: true, fileName: safeName + '.json' };
+    } catch (error) {
+        log(`[RenameSave] Error: ${error.message}`);
+        return { success: false, error: error.message };
+    }
+});
+
+// 重启应用
+ipcMain.handle('relaunch-app', () => {
+    app.relaunch();
+    app.exit(0);
+});
+
 if (!gotTheLock) {
     log('Another instance is running, quitting.');
     app.quit();

@@ -131,7 +131,7 @@ async function tryAdoptOrphanData(currentUserId) {
         }
 
         const otherDirs = allDirs
-            .filter(d => d.isDirectory() && d.name !== currentUserId)
+            .filter(d => d.isDirectory() && d.name !== currentUserId && !d.name.startsWith('_'))
             .map(d => d.name);
 
         if (otherDirs.length !== 1) return false; // 只有恰好一个其他用户时才自动领养

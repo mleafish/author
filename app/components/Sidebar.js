@@ -5,11 +5,11 @@ import { createPortal } from 'react-dom';
 import { useAppStore } from '../store/useAppStore';
 import { useI18n } from '../lib/useI18n';
 import { createChapter, deleteChapter, updateChapter, saveChapters, getChapters, createVolume, insertChapterInVolume, reorderItems } from '../lib/storage';
-import { exportProject, importProject, importWork, exportWorkAsTxt, exportWorkAsMarkdown, exportWorkAsDocx, exportWorkAsEpub, exportWorkAsPdf } from '../lib/project-io';
+import { importWork, exportWorkAsTxt, exportWorkAsMarkdown, exportWorkAsDocx, exportWorkAsEpub, exportWorkAsPdf } from '../lib/project-io';
 import { WRITING_MODES, getAllWorks, getSettingsNodes, addWork, saveSettingsNodes, setActiveWorkId as setActiveWorkIdSetting, getActiveWorkId } from '../lib/settings';
 import { detectConflicts, mergeChapters } from '../lib/chapter-number';
 import { estimateTokens } from '../lib/context-engine';
-import { Settings, Moon, Sun, History, Save, FolderOpen, FileDown, BookOpen, HelpCircle, Github, PanelLeftClose, ListOrdered, Library, Plus, FileText, FileType, BookMarked, FileOutput, Printer, Book, X, MoreHorizontal, ChevronUp, KeyRound, SlidersHorizontal, Eye, Smartphone, Clapperboard } from 'lucide-react';
+import { Settings, Moon, Sun, Save, FolderOpen, FileDown, BookOpen, HelpCircle, Github, PanelLeftClose, ListOrdered, Library, Plus, FileText, FileType, BookMarked, FileOutput, Printer, Book, X, MoreHorizontal, ChevronUp, KeyRound, SlidersHorizontal, Eye, Smartphone, Clapperboard, Archive } from 'lucide-react';
 import Tooltip from './ui/Tooltip';
 import IconButton from './ui/IconButton';
 import SettingsCategoryPanel, { getCategoryIcon, getCategoryColor, getCategoryLabel, getIconByName } from './SettingsCategoryPanel';
@@ -53,22 +53,6 @@ function MoreMenuPortal({ anchorRef, t, setShowSettings, setShowMoreMenu, onOpen
                     <SlidersHorizontal size={14} style={{ flexShrink: 0 }} /> <span>{t('settings.tabPreferences') || '偏好设置'}</span>
                 </button>
                 <div style={{ height: 1, background: 'var(--border-light)', margin: '4px 0' }} />
-                <button className="dropdown-item" style={{ display: 'flex', alignItems: 'center', gap: 8 }} onClick={async () => {
-                    setShowMoreMenu(false);
-                    const openDataFolder = window?.electronAPI?.openDataFolder;
-                    if (typeof openDataFolder !== 'function') {
-                        showToast?.(t('sidebar.openDataFolderFailed').replace('{error}', '当前环境不支持'), 'error');
-                        return;
-                    }
-                    const result = await openDataFolder();
-                    if (result?.success) {
-                        showToast?.(t('sidebar.openDataFolderSuccess') || '已打开数据存储文件夹', 'success');
-                        return;
-                    }
-                    showToast?.((t('sidebar.openDataFolderFailed') || '打开数据存储文件夹失败：{error}').replace('{error}', result?.error || 'Unknown error'), 'error');
-                }}>
-                    <FolderOpen size={14} style={{ flexShrink: 0 }} /> <span>{t('sidebar.menuDataFolder') || '数据存储地址'}</span>
-                </button>
                 <button className="dropdown-item" style={{ display: 'flex', alignItems: 'center', gap: 8 }} onClick={() => { onOpenHelp?.(); setShowMoreMenu(false); }}>
                     <HelpCircle size={14} style={{ flexShrink: 0 }} /> <span>{t('sidebar.menuHelp') || '帮助'}</span>
                 </button>
@@ -91,8 +75,8 @@ export default function Sidebar({ onOpenHelp, onToggle, editorRef, pushMode }) {
         theme, setTheme,
         writingMode,
         setShowSettings,
-        setShowSnapshots,
         setShowBookInfo,
+        setShowSaveManager,
         showToast,
         setOpenCategoryModal,
         settingsVersion,
@@ -247,9 +231,15 @@ export default function Sidebar({ onOpenHelp, onToggle, editorRef, pushMode }) {
         return t('sidebar.defaultChapterTitle').replace('{num}', chapters.length + 1);
     }, [chapters, t]);
 
-    // 创建新章节 — 支持分卷内创建
+    // 创建新章节 — 支持分卷内创建；有分卷时自动归入最新分卷
     const handleCreateChapter = useCallback(async (volumeId) => {
-        const targetVol = volumeId || activeVolumeId;
+        const hasVolumes = chapters.some(c => c.type === 'volume');
+        let targetVol = volumeId || activeVolumeId;
+        // 有分卷但未指定目标时，自动归入最后一个分卷
+        if (!targetVol && hasVolumes) {
+            const lastVol = [...chapters].reverse().find(c => c.type === 'volume');
+            if (lastVol) targetVol = lastVol.id;
+        }
         const title = getNextChapterTitle(targetVol);
         if (targetVol) {
             // 在分卷内创建
@@ -260,13 +250,14 @@ export default function Sidebar({ onOpenHelp, onToggle, editorRef, pushMode }) {
             setRenameTitle(title);
         } else {
             const ch = await createChapter(title, activeWorkId);
-            addChapter(ch);
+            const allChapters = await getChapters(activeWorkId);
+            setChapters(allChapters);
             setActiveChapterId(ch.id);
             setRenameId(ch.id);
             setRenameTitle(title);
         }
         showToast(t('sidebar.chapterCreated').replace('{title}', title), 'success');
-    }, [getNextChapterTitle, showToast, addChapter, setChapters, setActiveChapterId, t, activeWorkId, activeVolumeId]);
+    }, [getNextChapterTitle, showToast, setChapters, setActiveChapterId, t, activeWorkId, activeVolumeId, chapters]);
 
     // 删除章节/分卷
     const handleDeleteChapter = useCallback(async (id) => {
@@ -407,6 +398,7 @@ export default function Sidebar({ onOpenHelp, onToggle, editorRef, pushMode }) {
 
         // 如果拖拽的是分卷，需要带上其下所有章节一起移动
         const draggedItem = chapters[fromIdx];
+        const targetItem = chapters[toIdx];
         let draggedIds = [dragId];
         if (draggedItem.type === 'volume') {
             let i = fromIdx + 1;
@@ -417,10 +409,46 @@ export default function Sidebar({ onOpenHelp, onToggle, editorRef, pushMode }) {
         }
 
         const remaining = ids.filter(id => !draggedIds.includes(id));
-        let insertAt = remaining.indexOf(dragOverId);
-        if (insertAt === -1) insertAt = remaining.length;
-        if (dragOverPos === 'bottom') insertAt++;
-        remaining.splice(insertAt, 0, ...draggedIds);
+        const hasVolumes = chapters.some(c => c.type === 'volume');
+
+        // 拖拽章节到分卷上：插入到该分卷的末尾
+        if (targetItem.type === 'volume' && draggedItem.type !== 'volume') {
+            const volIdx = remaining.indexOf(dragOverId);
+            let insertAt = volIdx + 1;
+            while (insertAt < remaining.length) {
+                const item = chapters.find(c => c.id === remaining[insertAt]);
+                if (item && item.type === 'volume') break;
+                insertAt++;
+            }
+            remaining.splice(insertAt, 0, ...draggedIds);
+        } else {
+            let insertAt = remaining.indexOf(dragOverId);
+            if (insertAt === -1) insertAt = remaining.length;
+            if (dragOverPos === 'bottom') insertAt++;
+            remaining.splice(insertAt, 0, ...draggedIds);
+
+            // 有分卷时，确保章节不会被拖到所有分卷之前（卷外）
+            if (hasVolumes && draggedItem.type !== 'volume') {
+                const draggedIdx = remaining.indexOf(dragId);
+                // 检查拖拽后的章节前面是否有分卷
+                let hasPrecedingVolume = false;
+                for (let i = draggedIdx - 1; i >= 0; i--) {
+                    const item = chapters.find(c => c.id === remaining[i]);
+                    if (item && item.type === 'volume') { hasPrecedingVolume = true; break; }
+                }
+                if (!hasPrecedingVolume) {
+                    // 移到第一个分卷之后
+                    remaining.splice(draggedIdx, 1);
+                    const firstVolIdx = remaining.findIndex(id => {
+                        const item = chapters.find(c => c.id === id);
+                        return item && item.type === 'volume';
+                    });
+                    if (firstVolIdx !== -1) {
+                        remaining.splice(firstVolIdx + 1, 0, dragId);
+                    }
+                }
+            }
+        }
 
         const reordered = await reorderItems(remaining, activeWorkId);
         reorderChapters(reordered);
@@ -688,9 +716,7 @@ export default function Sidebar({ onOpenHelp, onToggle, editorRef, pushMode }) {
                     </div>
                     <div className="sidebar-nav-bottom">
                         <IconButton icon={theme === 'light' ? <Moon size={18} /> : theme === 'eye' ? <Eye size={18} /> : <Sun size={18} />} label={theme === 'light' ? t('sidebar.tooltipThemeDark') : theme === 'eye' ? '护眼模式' : t('sidebar.tooltipThemeLight')} text={sidebarOpen ? (theme === 'light' ? (t('sidebar.navThemeDark') || '暗色') : theme === 'eye' ? '护眼' : (t('sidebar.navThemeLight') || '亮色')) : undefined} tooltipSide="right" onClick={toggleTheme} className="nav-item" />
-                        <IconButton icon={<History size={18} />} label={t('sidebar.tooltipTimeMachine')} text={sidebarOpen ? (t('sidebar.navSnapshots') || '快照') : undefined} tooltipSide="right" onClick={() => setShowSnapshots(true)} className="nav-item" />
-                        <IconButton icon={<FolderOpen size={18} />} label={t('sidebar.menuLoad') || '读档'} text={sidebarOpen ? (t('sidebar.menuLoad') || '读档') : undefined} tooltipSide="right" onClick={() => document.getElementById('project-import-input')?.click()} className="nav-item" />
-                        <IconButton icon={<Save size={18} />} label={t('sidebar.menuSave') || '存档'} text={sidebarOpen ? (t('sidebar.menuSave') || '存档') : undefined} tooltipSide="right" onClick={() => { exportProject(); showToast(t('sidebar.exportedProject') || '已导出', 'success'); }} className="nav-item" />
+                        <IconButton icon={<Archive size={18} />} label={t('sidebar.tooltipSaveManager')} text={sidebarOpen ? (t('sidebar.navSaves') || '存档') : undefined} tooltipSide="right" onClick={() => setShowSaveManager(true)} className="nav-item" />
                         <IconButton icon={<FileDown size={18} />} label={t('sidebar.menuImportWork') || '导入'} text={sidebarOpen ? (t('sidebar.navImport') || '导入') : undefined} tooltipSide="right" onClick={() => document.getElementById('work-import-input')?.click()} className="nav-item" />
                         <div ref={navExportRef} style={{ position: 'relative', width: '100%', display: 'flex', justifyContent: 'center' }}>
                             <IconButton icon={<FileOutput size={18} />} label={showNavExportMenu ? '' : '导出'} text={sidebarOpen ? '导出' : undefined} tooltipSide="right" onClick={() => setShowNavExportMenu(!showNavExportMenu)} className="nav-item" />
@@ -762,7 +788,7 @@ export default function Sidebar({ onOpenHelp, onToggle, editorRef, pushMode }) {
                                     break;
                                 }
                             }
-                            if (belongsToCollapsed) return null;
+                            if (belongsToCollapsed && !isActive) return null;
                         }
 
                         // 分卷头渲染
@@ -935,7 +961,6 @@ export default function Sidebar({ onOpenHelp, onToggle, editorRef, pushMode }) {
                 </div>
 
                 {/* 隐藏的文件输入组件 */}
-                <input id="project-import-input" type="file" accept=".json" style={{ display: 'none' }} onChange={async (e) => { const file = e.target.files?.[0]; if (!file) return; const result = await importProject(file); if (result.success) { alert(result.message + '\n' + t('sidebar.importSuccess')); window.location.reload(); } else { alert(result.message); } e.target.value = ''; }} />
                 <input id="work-import-input" type="file" accept=".txt,.md,.markdown,.epub,.docx,.doc,.pdf" style={{ display: 'none' }} onChange={async (e) => { const file = e.target.files?.[0]; if (!file) return; try { const result = await importWork(file); if (!result.success) { const msg = result.message === 'noChapter' ? t('sidebar.importWorkNoChapter') : t('sidebar.importWorkFailed').replace('{error}', result.message); showToast(msg, 'error'); e.target.value = ''; return; } setImportModal({ chapters: result.chapters, totalWords: result.totalWords }); } catch (err) { showToast(t('sidebar.importWorkFailed').replace('{error}', err.message), 'error'); } e.target.value = ''; }} />
             </aside>
 
@@ -1041,7 +1066,7 @@ export default function Sidebar({ onOpenHelp, onToggle, editorRef, pushMode }) {
             {/* ===== 导出更多弹窗 ===== */}
             {showExportModal && (
                 <ExportModal
-                    chapters={chapters}
+                    chapters={chapters.filter(ch => ch.type !== 'volume')}
                     onClose={() => setShowExportModal(false)}
                     onExport={(selectedChapters, format) => {
                         const fns = { txt: exportWorkAsTxt, md: exportWorkAsMarkdown, docx: exportWorkAsDocx, epub: exportWorkAsEpub, pdf: exportWorkAsPdf };

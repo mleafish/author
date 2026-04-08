@@ -139,11 +139,33 @@ const store = create((set, get) => ({
     jumpToNodeId: null,
     setJumpToNodeId: (id) => set({ jumpToNodeId: id }),
 
-    showSnapshots: false,
-    setShowSnapshots: (show) => set({ showSnapshots: show }),
-
     theme: 'light',
     setTheme: (theme) => set({ theme }),
+
+    showSaveManager: false,
+    setShowSaveManager: (show) => set({ showSaveManager: show }),
+
+    // --- 活跃存档 ---
+    activeSaveName: typeof window !== 'undefined'
+        ? localStorage.getItem('author-active-save') || null : null,
+    activeSaveDisplayName: typeof window !== 'undefined'
+        ? localStorage.getItem('author-active-save-display') || null : null,
+    setActiveSave: (fileName, displayName) => set(() => {
+        if (typeof window !== 'undefined') {
+            if (fileName) {
+                localStorage.setItem('author-active-save', fileName);
+                localStorage.setItem('author-active-save-display',
+                    displayName || fileName.replace(/\.json$/, ''));
+            } else {
+                localStorage.removeItem('author-active-save');
+                localStorage.removeItem('author-active-save-display');
+            }
+        }
+        return {
+            activeSaveName: fileName || null,
+            activeSaveDisplayName: displayName || (fileName ? fileName.replace(/\.json$/, '') : null),
+        };
+    }),
 
     writingMode: 'webnovel',
     setWritingMode: (mode) => set({ writingMode: mode }),

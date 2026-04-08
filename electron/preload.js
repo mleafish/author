@@ -8,6 +8,16 @@ contextBridge.exposeInMainWorld('electronAPI', {
     getDataPath: () => ipcRenderer.invoke('get-data-path'),
     selectDataPath: () => ipcRenderer.invoke('select-data-path'),
     migrateDataPath: (newPath) => ipcRenderer.invoke('migrate-data-path', newPath),
+    // ---- 存档管理 ----
+    listSaves: () => ipcRenderer.invoke('list-saves'),
+    createSave: (name) => ipcRenderer.invoke('create-save', name),
+    loadSave: (name) => ipcRenderer.invoke('load-save', name),
+    exportSave: () => ipcRenderer.invoke('export-save'),
+    importSave: () => ipcRenderer.invoke('import-save'),
+    deleteSave: (name) => ipcRenderer.invoke('delete-save', name),
+    renameSave: (oldName, newName) => ipcRenderer.invoke('rename-save', oldName, newName),
+    updateSave: (fileName) => ipcRenderer.invoke('update-save', fileName),
+    relaunchApp: () => ipcRenderer.invoke('relaunch-app'),
     // ---- 自动更新 (electron-updater) ----
     checkForUpdate: () => ipcRenderer.invoke('check-for-update'),
     downloadUpdate: () => ipcRenderer.invoke('download-update'),
