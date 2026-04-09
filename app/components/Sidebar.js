@@ -9,7 +9,7 @@ import { importWork, exportWorkAsTxt, exportWorkAsMarkdown, exportWorkAsDocx, ex
 import { WRITING_MODES, getAllWorks, getSettingsNodes, addWork, saveSettingsNodes, setActiveWorkId as setActiveWorkIdSetting, getActiveWorkId } from '../lib/settings';
 import { detectConflicts, mergeChapters } from '../lib/chapter-number';
 import { estimateTokens } from '../lib/context-engine';
-import { Settings, Moon, Sun, Save, FolderOpen, FileDown, BookOpen, HelpCircle, Github, PanelLeftClose, ListOrdered, Library, Plus, FileText, FileType, BookMarked, FileOutput, Printer, Book, X, MoreHorizontal, ChevronUp, KeyRound, SlidersHorizontal, Eye, Smartphone, Clapperboard, Archive } from 'lucide-react';
+import { Settings, Moon as Sun, Sun as Moon, Save, FolderOpen, FileDown, BookOpen, HelpCircle, Github, PanelLeftClose, ListOrdered, Library, Plus, FileText, FileType, BookMarked, FileOutput, Printer, Book, X, MoreHorizontal, ChevronUp, KeyRound, SlidersHorizontal, Eye, Smartphone, Clapperboard, Archive } from 'lucide-react';
 import Tooltip from './ui/Tooltip';
 import IconButton from './ui/IconButton';
 import SettingsCategoryPanel, { getCategoryIcon, getCategoryColor, getCategoryLabel, getIconByName } from './SettingsCategoryPanel';

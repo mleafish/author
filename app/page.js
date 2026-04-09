@@ -36,7 +36,6 @@ const CategorySettingsModal = dynamic(() => import('./components/CategorySetting
 const HelpPanel = dynamic(() => import('./components/HelpPanel'), { ssr: false });
 const AiSidebar = dynamic(() => import('./components/AiSidebar'), { ssr: false });
 const SaveManager = dynamic(() => import('./components/SaveManager'), { ssr: false });
-const WelcomeModal = dynamic(() => import('./components/WelcomeModal'), { ssr: false });
 const UpdateBanner = dynamic(() => import('./components/UpdateBanner'), { ssr: false });
 const BookInfoPanel = dynamic(() => import('./components/BookInfoPanel'), { ssr: false });
 
@@ -642,7 +641,6 @@ export default function Home() {
       <HelpPanel open={showHelp} onClose={() => setShowHelp(false)} />
 
       {/* ===== 首次引导 ===== */}
-      <WelcomeModal />
     </div>
   );
 }

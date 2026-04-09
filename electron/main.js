@@ -5,6 +5,10 @@ const http = require('http');
 const net = require('net');
 const fs = require('fs');
 const { getServerWaitConfig, shouldLoadEnvFile } = require('./startup-config');
+const {
+    shouldOpenExternally,
+    shouldBlockNavigation,
+} = require('./navigation-policy');
 
 // 加载 .env.local（轻量实现，无需 dotenv 依赖）
 (function loadEnvFile() {
@@ -543,11 +547,34 @@ function createWindow() {
         }
     });
 
+    const guardNavigation = (event, url) => {
+        if (!shouldBlockNavigation(url)) {
+            return;
+        }
+
+        event.preventDefault();
+        log(`[Navigation] Blocked in-app navigation to: ${url}`);
+
+        if (shouldOpenExternally(url)) {
+            shell.openExternal(url);
+        }
+    };
+
+    mainWindow.webContents.on('will-navigate', guardNavigation);
+    mainWindow.webContents.on('will-redirect', guardNavigation);
+
     mainWindow.webContents.setWindowOpenHandler(({ url }) => {
-        if (url.startsWith('http') && !url.includes('localhost')) {
+        if (shouldOpenExternally(url)) {
+            log(`[Navigation] Opened external window in browser: ${url}`);
             shell.openExternal(url);
             return { action: 'deny' };
         }
+
+        if (shouldBlockNavigation(url)) {
+            log(`[Navigation] Blocked window open: ${url}`);
+            return { action: 'deny' };
+        }
+
         return { action: 'allow' };
     });
 

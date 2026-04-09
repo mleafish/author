@@ -7,11 +7,29 @@ import zh from '../locales/zh.json';
 
 const translations = { en, zh };
 
+const THEME_LABEL_OVERRIDES = {
+    en: {
+        'sidebar.navThemeDark': 'Light',
+        'sidebar.navThemeLight': 'Dark',
+        'sidebar.tooltipThemeDark': 'Light',
+        'sidebar.tooltipThemeLight': 'Dark',
+    },
+    zh: {
+        'sidebar.navThemeDark': '亮色',
+        'sidebar.navThemeLight': '暗色',
+        'sidebar.tooltipThemeDark': '亮色',
+        'sidebar.tooltipThemeLight': '暗色',
+    },
+};
+
 export function useI18n() {
     // Default to 'zh' if language is null initially
     const language = useAppStore(state => state.language) || 'zh';
 
     const t = useCallback((path) => {
+        const override = THEME_LABEL_OVERRIDES[language]?.[path];
+        if (override) return override;
+
         const keys = path.split('.');
         let current = translations[language] || translations['zh'];
 

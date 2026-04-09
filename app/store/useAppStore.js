@@ -26,7 +26,7 @@ function normalizeBackgroundLayer(value) {
 }
 
 function normalizeLanguage(lang) {
-    return lang === 'zh' || lang === 'en' ? lang : null;
+    return lang === 'en' ? 'en' : 'zh';
 }
 
 function normalizeWritingBackground(value) {
@@ -171,16 +171,12 @@ const store = create((set, get) => ({
     setWritingMode: (mode) => set({ writingMode: mode }),
 
     // --- Localization & Theming ---
-    language: typeof window !== 'undefined' ? normalizeLanguage(localStorage.getItem('author-lang')) : null,
+    language: typeof window !== 'undefined' ? normalizeLanguage(localStorage.getItem('author-lang')) : 'zh',
     setLanguage: (lang) => set(() => {
         const nextLanguage = normalizeLanguage(lang);
         if (typeof window !== 'undefined') {
-            if (nextLanguage) {
-                localStorage.setItem('author-lang', nextLanguage);
-                persistSet('author-lang', nextLanguage).catch(() => { });
-            } else {
-                localStorage.removeItem('author-lang');
-            }
+            localStorage.setItem('author-lang', nextLanguage);
+            persistSet('author-lang', nextLanguage).catch(() => { });
         }
         return { language: nextLanguage };
     }),
